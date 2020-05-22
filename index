@@ -1,0 +1,102 @@
+<!doctype html>
+<html class="no-js" lang="he">
+
+
+<script type="text/javascript">
+
+  let InitOptimalGlu = 180;
+  let initInsulin = 0;
+
+  function insulinDelta(glucose, igForm) {
+    let delta = 0;
+    delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
+    // let x = 'glucose = ' + glucose + 'igForm.optimalGlucose.value =' + igForm.optimalGlucose.value + 'igForm.insulin_Glucose_Factor.value' + igForm.glucose_Insulin_Factor.value +' delta = ' + delta;
+    // document.getElementById("demo").innerHTML = x;
+    return delta;
+    // Number(this.form.insulin_Glucose_Factor);
+      // (Number(glucose) - Number(this.form.optimalGlucose.value));
+  }
+
+  function update(this_form) {
+    let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value, this_form);
+    this_form.rInsulin0.value = Number(ri0).toFixed(0);
+    let ri1 = Number(this_form.insulin1.value) + insulinDelta(this_form.glucose2.value, this_form);
+    this_form.rInsulin1.value = Number(ri1).toFixed(0);
+    let ri2 = Number(this_form.insulin2.value) + insulinDelta(this_form.glucose0.value, this_form);
+    this_form.rInsulin2.value = Number(ri2).toFixed(0);
+  }
+
+  function clearForm(oForm) {
+    oForm.reset();
+
+  }
+</script>
+
+<head>
+  <meta charset="utf-8">
+  <title>אינסולין היום לפי אתמול</title>
+  <meta name="description" content="נסיון ראשון בווב-סטורם">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <!-- <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css"> -->
+  <link rel="stylesheet" href="styleD.css">
+
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+  <!--[if IE]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+  <![endif]-->
+
+  <!-- Add your site or application content here -->
+  <div id="outer">
+    <div id="title">
+        <h1>תכנית אינסולין להיום </h1>
+  <!--      <p aria-placeholder id="demo"></p>
+        <p></p>-->
+        <p>מחשבון - לא תחליף ליעוץ רפואי</p>
+    </div>
+    <div id="ins_form">
+        <form action=http://localhost:5000/form method="post" id="igForm">
+        <table id="calc">
+          <tr><td>סוכר שנמדד היום בבוקר</td><td><input type="text" name="glucose0" size=12 value=180></td></tr>
+          <tr><td>אינסולין שהוזרק אתמול בבוקר</td><td><input type="text" name="insulin0" size="150%" value=10></td></tr>
+          <tr><td>סוכר שנמדד אתמול בצהרים</td><td><input type="text" name="glucose1" size="150%" value=120></td></tr>
+          <tr><td>אינסולין שהוזרק אתמול בצהרים</td><td><input type="text" name="insulin1" size="150%" value=12></td></tr>
+          <tr><td>סוכר שנמדד אתמול בערב</td><td><input type="text" name="glucose2" size="150%" value=90></td></tr>
+          <tr><td>אינסולין ארוך-טווח שהוזרק <br></td><td><input type="text" name="insulin2" size="150%" value=14></td></tr>
+          <tr><td>סוכר אופטימלי עם תרופות:</td><td><input type="text" name="optimalGlucose" value=180 size="150%"></td></tr>
+          <tr><td>יחס תיקון אינסולין לסוכר:</td><td><input type="text" name="glucose_Insulin_Factor" value="10" size="150%"></td></tr>
+          <tr><td> </td><td><input type="button" onClick="update(this.form)" value="חשב"></td></tr>
+          <tr><td>אינסולין מחושב להבוקר</td><td><input type="text" name="rInsulin0" size="150%"></td></tr>
+          <tr><td>אינסולין מחושב לצהרים</td><td><input type="text" name="rInsulin1" size="150%"></td></tr>
+          <tr><td>אינסולין ארוך-טווח מחושב </td><td><input type="text" name="rInsulin2" size="150%"></td></tr>
+          <tr><td> </td><td><input type="button" value="איפוס" name="reset_form" onClick="clearForm(this.form)"></td></tr>
+          <tr><td> </td><td><input type="submit" value="שלח"></td></tr>
+        </table>
+      </form>
+    </div>
+  </div>
+  <script src="js/vendor/modernizr-3.8.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<!--   <script>
+    window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
+    ga('create', 'UA-XXXXX-Y', 'auto'); ga('set','transport','beacon'); ga('send', 'pageview')
+  </script>
+  <script src="https://www.google-analytics.com/analytics.js" async></script>
+ -->
+</body>
+
+</html>
