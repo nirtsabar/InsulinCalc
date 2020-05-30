@@ -3,26 +3,88 @@
 
 <script type="text/javascript">
 
-  let InitOptimalGlu = 180;
-  let initInsulin = 0;
+  /* Initial parameters */ 
+let InitOptimalGlu = 180;
+let InitInsGluFactor = 18;
+let initInsulin = 0;
+
+function tP (tID) { /* Hebrew text placement */ 
+    switch (tID) {
+      case "Insulin_Glucose_Header" : text = "אינסולין היום לפי אתמול<"; break;
+      case "Glucose_measured_today_morning" : text = "סוכר שנמדד היום בבוקר"; break;
+      case "Insulin_given_yesterday_morning" : text = "אינסולין שניתן אתמול בבוקר"; break;
+      case "Glucose_measured_yesterday_noon" : text = "סוכר שנמדד היום בצהרים"; break;
+      case "Insulin_given_yesterday_noon" : text = "אינסולין שניתן אתמול בצהרים"; break;
+      case "Glucose_measured_yesterday_evening" : text = "סוכר שנמדד היום בערב"; break;
+      case "Insulin_given_yesterday_evening" : text = "אינסולין שניתן אתמול בערב"; break;
+      case "Optimal_glucose" : text = "סוכר אופטימלי עם תרופות"; break;
+      case "GIR" : text = "תיקון סוכר ליחידת אינסולין"; break;
+      case "gItiptxt" : text = "יש להתאים לגיל ומצב תפקודי" ; break;
+      case "rI0t" : text = "אינסולין מחושב להבוקר" ; break;
+      case "rI1t" : text = "אינסולין מחושב לצהרים" ; break;
+      case "rI2t" : text = "אינסולין ארוך-טווח מחושב" ; break;
+    }
+    document.getElementById(tID).innerHTML = text;
+}
+
+  function formInit(iForm) { 
+    /* Initialization of form parameters*/
+    iForm.glucose0.value = initInsulin;
+    iForm.glucose1.value = initInsulin;
+    iForm.glucose2.value = "";
+    iForm.insulin0.value = initInsulin;
+    iForm.insulin1.value = initInsulin;
+    iForm.insulin2.value = initInsulin;
+    iForm.optimalGlucose.value = InitOptimalGlu;
+    iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
+    
+    /* Initialization of form texts*/
+    let igFormEs = document.getElementById("ins_form").querySelectorAll(".input_txt");
+    for (let i = 0; i < igFormEs.length; i++) {
+      let elem = igFormEs[i];
+      tP(elem.id); //Placing the correct texts
+//      alert("Element ["+i+"]="+elem+"\nvalue=|"+elem.value+"|"+"\nname=|"+elem.name+"|"+"\nid=|"+elem.id+"|");
+    }
+  }
 
   function insulinDelta(glucose, igForm) {
     let delta = 0;
     delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
-    // let x = 'glucose = ' + glucose + 'igForm.optimalGlucose.value =' + igForm.optimalGlucose.value + 'igForm.insulin_Glucose_Factor.value' + igForm.glucose_Insulin_Factor.value +' delta = ' + delta;
-    // document.getElementById("demo").innerHTML = x;
+    if (glucose == "") {delta = "?"};
     return delta;
-    // Number(this.form.insulin_Glucose_Factor);
-      // (Number(glucose) - Number(this.form.optimalGlucose.value));
+  }
+
+  function correctedInsulin(insulinDose) {
+    if (isNaN(insulinDose)) {  
+      return "?";
+    } else {
+      if (insulinDose < 0) {
+        return 0;}
+      else {
+        return insulinDose.toFixed(0);
+      }
+    }
   }
 
   function update(this_form) {
     let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value, this_form);
-    this_form.rInsulin0.value = Number(ri0).toFixed(0);
+    this_form.rInsulin0.value = correctedInsulin(ri0);
     let ri1 = Number(this_form.insulin1.value) + insulinDelta(this_form.glucose2.value, this_form);
-    this_form.rInsulin1.value = Number(ri1).toFixed(0);
+    this_form.rInsulin1.value = correctedInsulin(ri1);
     let ri2 = Number(this_form.insulin2.value) + insulinDelta(this_form.glucose0.value, this_form);
-    this_form.rInsulin2.value = Number(ri2).toFixed(0);
+    this_form.rInsulin2.value = correctedInsulin(ri2);
+    // document.getElementById("demo3").innerHTML = "ri2 = "+ri2;  
+  }
+
+  function check_data(t_form) {
+ /*   document.getElementById("demo1").innerHTML = "CHECK 3: " + t_form.glucose_Insulin_Factor.value;  
+     ^v checks 
+    t_form.glucose_Insulin_Factor.style.color="yellow";*/
+    if (Number(t_form.glucose_Insulin_Factor.value<=0)) {
+      alert("Glucose/Insulin Factor must be positive");
+      t_form.glucose_Insulin_Factor.value = InitInsGluFactor;
+      show_remark(t_form.gItiptxt);
+    }
   }
 
   function clearForm(oForm) {
@@ -33,152 +95,198 @@
 
 <head>
   <meta charset="utf-8">
-  <title>אינסולין היום לפי אתמול</title>
-  <meta name="description" content="נסיון ראשון בווב-סטורם">
+  <title id="Insulin_Glucose_Header"></title>
+  <meta name="description" content="Learning. The hard way...">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="manifest" href="site.webmanifest">
-  <link rel="apple-touch-icon" href="icon.png">
-  <!-- Place favicon.ico in the root directory -->
-
 <!--  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
 -->
 
-  <meta name="theme-color" content="#fafafa">
+  <style>
 
+    html {
+      margin: 0;
+      color: white;
+      font-size: 4vw;
+      line-height: 1.4;
+      height:100vh;
+      width:97.5vw;
+      direction: rtl;
+      text-align: center;
+      horiz-align: center;
+    }
 
-<style>
-  input {
-    font-family: inherit; /* 1 */
-    font-size: 100%; /* 1 */
-    /*line-height: 1.15;  1 */
-    /*margin: 0;  2 */
-  }
+    div, body {
+      margin: 1vw;
+      padding: 1vw;
+      background-color: green;
+      /**
+      border-width: 1px; 
+      border-color: black;*/
+    }
 
-  html {
-    color: white;
-    font-size: 150%;
-    line-height: 1.4;
-    height:98%;
-    width:98%;
-    margin:0;
-    border-radius: 40px;
-    direction: rtl;
-  }
+    h1 {
+      color: lightgreen;
+    }
 
-  body {
-    /*display: flex;*/
-    padding: 2%;
-    background-color: green;
-  }
+    div {
+    }
 
-  h1 {
-    color: lightgreen;
-  }
+    p, form, h1, table {
+      display: block;
+      margin: 1vw;
+      text-align: center;
+      horiz-align: center;
+    /**  border-color: black;**
+      border-width: 1px;
+      border-style: solid;*/
+      border-radius: 20px;
+      background-color: darkgreen;
+      -moz-background-clip:    padding;
+      background-clip:         padding-box;
+      -webkit-background-clip: padding-box;
+    }
 
-  p, form, h1, table {
-    margin:auto;
-    position: relative;
-    text-align: center;
-    horiz-align: center;
-    top: 10%;
-    border-color: transparent;
-    border-width: 4px;
-    border-style: solid;
-    border-radius: 20px;
-    background-color: darkgreen;
-    -moz-background-clip:    padding;
-    background-clip:         padding-box;
-    -webkit-background-clip: padding-box;
-  }
+    table {
+      /*width: 80vw;*/
+      border-color: black;/*****/
+      border-width: 2px;
+      margin: auto;
+      padding: 3vw;
+    }
 
-  table {
-    border-color: black;
-    border-width: 0px;
-  }
+    tr {
+      border-color: black;/*****/
+      border-width: 1px;
+    }
+    td {
+      border-color: lightgreen;***
+      border-width: 1px;
+      border-radius: 15px;
+    }
+    
 
-  td {
-    text-align: left;
-    padding: 0.5em 1em;
-  }
+    input, .input_txt {
+      border-width: 4px;
+      border-radius: 15px;
+      border-style: solid;
+      border-color: green;/*****/
+      background-color: darkgreen;
+      font-family: inherit;
+      font-size: 5vw;
+      color: white;
+      text-align: right;
+      padding: 0.5em;
+    }
 
-  input {
-    border-radius: 6px;
-    border-style: solid;
-    border-color: green;
-    background-color: darkgreen;
-    color: white;
-    text-align: right;
-    padding: 0.5em 1em;
-    width: 2em;
-  }
+    input {
+      width: 8vw;
+    /**  border-color: black;
+      border-width: 1px;*/
+    }
+    .input_txt {
+      width: 70vw;
+  /*    border-color: black;
+      border-width: 1px;**/
+    }
 
-  [input.text] {
-    font-size: 12;
-  }
+    .inGlu {
+      type: text; maxlength: 3;
+     /* border-color: black;*
+      border-width: 1px;*/
+    }
+    .inIns {
+      type: text; maxlength: 2;
+    /*  border-color: black;*
+      border-width: 1px;*/
+    }
+    
+    [type="button"], [type="submit"] {
+      width: 15vw;
+      text-align: center;
+      background-color: green;
+      padding: 0.3em;
+     /* border-color: black;*
+      border-width: 1px;*/
+    }
+    
+    .has_tip {
+      position: relative;
+      display: block;
+      /*border-bottom: 4px  #00ff00;
+      border-color: black;
+      border-width: 1px;**/
+    }
 
-  [type="button"], [type="submit"] {
-    width: 4.3em;
-    text-align: center;
-    background-color: green;
-  }
-  
-  .tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-  }
+    .tip {
+      visibility: hidden;
+      display: block;
+      top: 1.2em;
+      position: relative;
+      width: 50vw;
+      Right: 0;
+      background-color: #004d00;
+      color: #DDFFDD;
+      text-align: center;
+      border-radius: 6px;
+      padding: 0 1em;
+      border-color: black;/***/
+      border-width: 1px;
+    }
+    #ogtip, #gItiptxt {
+      top: 1em;
+     /* width: 20vw;*/
+     /* Right: -20vw;*/
+    }
 
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-   }
-
-   .tooltip:hover .tooltiptext {
-      visibility: visible;
-   }
-
-  
-</style>
+    .has_tip:hover .tip {
+        visibility: visible;
+    } 
+    </style>
 </head>  
   
-<body>
+<body onload="formInit(igForm)">
   <!--[if IE]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
   <![endif]-->
 
   <!-- Add your site or application content here -->
   <div id="outer">
-    <div id="title">
+    <div id="main_title">
         <h1>תכנית אינסולין להיום </h1>
-  <!--      <p aria-placeholder id="demo"></p>
+        <!-- DEBUG TEXT 
+        <p aria-placeholder id="demo1"></p>
+        <p aria-placeholder id="demo2"></p>
+        <p aria-placeholder id="demo3"></p>
+        <p aria-placeholder id="demo4"></p>
+        <p aria-placeholder id="demo5"></p>
         <p></p>-->
-        <p>מחשבון - לא תחליף ליעוץ רפואי</p>
+        <p class="has_tip">מחשבון - לא תחליף ליעוץ רפואי<span class="tip">לפרטים: ד"ר ניר צבר  TSABAR.NIR@GMAIL.COM</span></p>
     </div>
     <div id="ins_form">
         <form action=http://localhost:5000/form method="post" id="igForm">
         <table id="calc">
-          <tr><td>סוכר שנמדד היום בבוקר</td><td><input type="text" name="glucose0" size=12 value=180></td></tr>
-          <tr><td>אינסולין שהוזרק אתמול בבוקר</td><td><input type="text" name="insulin0" size="150%" value=10></td></tr>
-          <tr><td>סוכר שנמדד אתמול בצהרים</td><td><input type="text" name="glucose1" size="150%" value=120></td></tr>
-          <tr><td>אינסולין שהוזרק אתמול בצהרים</td><td><input type="text" name="insulin1" size="150%" value=12></td></tr>
-          <tr><td>סוכר שנמדד אתמול בערב</td><td><input type="text" name="glucose2" size="150%" value=90></td></tr>
-          <tr><td>אינסולין ארוך-טווח שהוזרק <br></td><td><input type="text" name="insulin2" size="150%" value=14></td></tr>
-          <tr><td>סוכר אופטימלי עם תרופות:</td><td><input type="text" class="tooltip" name="optimalGlucose" value=180 size="150%" <span class="tooltiptext">יש להתאים לגיל ומצב תפקודי</span></td></tr>
-          <tr><td>יחס תיקון אינסולין לסוכר:</td><td><input type="text" name="glucose_Insulin_Factor" value="10" size="150%"></td></tr>
+          <tr><th name="InputText"></th><th name="InputParameter"></th></tr>
+          <tr><td class="input_txt" id="Glucose_measured_today_morning"></td><td><input class="inGlu" name="glucose0"></td></tr>
+          <tr><td class="input_txt" id="Insulin_given_yesterday_morning"></td><td><input class="inIns" name="insulin0"></td></tr>
+          <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td><td><input class="inGlu" name="glucose1"></td></tr>
+          <tr><td class="input_txt" id="Insulin_given_yesterday_noon"></td><td><input class="inIns" type="text" name="insulin1"></td></tr>
+          <tr><td class="input_txt" id="Glucose_measured_yesterday_evening"></td><td><input class="inGlu" type="text" name="glucose2"></td></tr>
+          <tr>
+            <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
+            <td><input class="inIns" type="text" name="insulin2"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="Optimal_glucose"></td>
+            <td><input type="text" name="optimalGlucose"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="GIR"></td>
+            <td><input type="text" name="glucose_Insulin_Factor" onfocusout="check_data(igForm)"></td>
+          </tr>
           <tr><td> </td><td><input type="button" onClick="update(this.form)" value="חשב"></td></tr>
-          <tr><td>אינסולין מחושב להבוקר</td><td><input type="text" name="rInsulin0" size="150%"></td></tr>
-          <tr><td>אינסולין מחושב לצהרים</td><td><input type="text" name="rInsulin1" size="150%"></td></tr>
-          <tr><td>אינסולין ארוך-טווח מחושב </td><td><input type="text" name="rInsulin2" size="150%"></td></tr>
+          <tr><td class="input_txt" id=rI0t></td><td><input readonly type="text" name="rInsulin0"></td></tr>
+          <tr><td class="input_txt" id=rI1t></td><td><input readonly type="text" name="rInsulin1"></td></tr>
+          <tr><td class="input_txt" id=rI2t></td><td><input readonly type="text" name="rInsulin2"></td></tr>
           <tr><td> </td><td><input type="button" value="איפוס" name="reset_form" onClick="clearForm(this.form)"></td></tr>
           <tr><td> </td><td><input type="submit" value="שלח"></td></tr>
         </table>
@@ -186,5 +294,3 @@
     </div>
   </div>
 </body>
-
-</html>
