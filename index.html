@@ -12,21 +12,25 @@ let initInsulin = 0;
 let Dict = [
   "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
   "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר  TSABAR.NIR@GMAIL.COM",
-  "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","לפני ארוחה",
-  "Insulin_given_yesterday_morning","אינסולין שניתן אתמול בבוקר","כמה יחידות הוזרקו?",
-  "Glucose_measured_yesterday_noon","סוכר שנמדד אתמול בצהרים","סוכר שנמדד היום בצהרים",
-  "Insulin_given_yesterday_noon","אינסולין שניתן אתמול בצהרים","אינסולין שניתן אתמול בצהרים",
-  "Glucose_measured_yesterday_evening","סוכר שנמדד אתמול בערב","סוכר שנמדד היום בערב",
-  "Insulin_given_yesterday_evening","אינסולין שניתן אתמול בערב","אינסולין שניתן אתמול בערב",
+  "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","סוכר שנמדד <i><b>היום</b></i> הבוקר בצום",
+  "Insulin_given_yesterday_morning","אינסולין שניתן אתמול בבוקר","כמה יחידות אינסולין הוזרקו אתמול בבוקר?",
+  "Glucose_measured_yesterday_noon","סוכר שנמדד אתמול בצהרים","סוכר שנמדד בצהרים אתמול",
+  "Insulin_given_yesterday_noon","אינסולין שניתן אתמול בצהרים","אינסולין שניתן בצהרים אתמול",
+  "Glucose_measured_yesterday_evening","סוכר שנמדד אתמול בערב","סוכר שנמדד בערב אתמול",
+  "Insulin_given_yesterday_evening","אינסולין שניתן אתמול בערב","כמה אינסולין הוזרק בערב אתמול ?",
   "Optimal_glucose","רמת סוכר אופטימלית","את רמת הסוכר האופטימלית יש להתאים לרמת הסיכון לנפילות סוכר, לגיל ולמצב התפקודי",
   "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה יביא לתיקון עדין יותר",
-  "gItiptxt","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי",
-  "rI0t","אינסולין מחושב להבוקר","בתנאי שהתנאים לא השתנו מאתמול",
-  "rI1t","אינסולין מחושב לצהרים","בתנאי שהתנאים לא השתנו מאתמול",
-  "rI2t","אינסולין ארוך-טווח מחושב","בתנאי שהתנאים לא השתנו מאתמול" ,
-  "CalcBtn","חשב","? מופיע כאשר לחסר נתון מתאים של סוכר",
-  "ZeroBtn","איפוס","לאתחול מחדש - רניתן לרענן את הדף",
-  "SubmitBtn","שלח","אופס... עובד על זה..."];
+  "gItiptxt","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי","רמת הסוכר האופטימלית בטיפול תרופתי גבוהה יותר ככל שהגיל עולה או המצב התפקודי יורד. בסוכרת מסוג 2 עדיף להפחית סוכר באמצעות תזונה נכונה מאשר באמצעות תרופות",
+  "rI0t","אינסולין מחושב להבוקר","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+  "rI1t","אינסולין מחושב לצהרים","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+  "rI2t","אינסולין ארוך-טווח מחושב","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול" ,
+  "CalcBtn","חשב","סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
+  "CalcBtnH","?","סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
+  "ZeroBtn","איפוס","לחיצה לאיפוס מלא. לאתחול מחדש - ניתן לרענן את הדף",
+  "ZeroBtnH","?","לחיצה לאיפוס מלא. לאתחול מחדש - ניתן לרענן את הדף",
+  "SubmitBtn","שלח","אופס... עובד על זה...",
+  "SubmitBtnH","?","האפשרות לשלוח - כרגע רק בשלב תכנון"
+  ];
 
 function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/ 
   ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
@@ -76,17 +80,24 @@ function hide_tip() {
 }
 
 // When the user clicks the trigger, open the modal 
-function helper(hIssue) {
+function helper(helpID) {
+  document.getElementById(helpID).style.borderColor = "lightgreen";
+  // Get the help text by it's ID and place it in
+  help_tP = tPHelp(document.getElementById(helpID));
+  document.getElementById("helpText").innerHTML = help_tP;
   // Get the modal and display it
   let modal = document.getElementById("myModal");
   modal.style.display = "block";
-  document.getElementById("helpText").innerHTML = tPHelp(document.getElementById(hIssue));
-
+  setTimeout(hide_modal, 2000);
   // Get the element that closes the modal
-  let off_switch = document.getElementsByClassName("close")[0];
+  off_switch = document.getElementById("helpText");
   // When the user clicks on this element (off_switch), close the modal
-  off_switch.onclick = function() {
+  //modal.onclick = function() {
+  modal.onclick = hide_modal;
+  function hide_modal() {
     modal.style.display = "none";
+    document.getElementById(helpID).style.borderColor = "green";
+  
   }
 }
 
@@ -160,6 +171,11 @@ function clearForm(oForm) {
       background-color: green;
     }
 
+    td:hover {
+      text-shadow: 2px 2px 8px #FF0000;
+      /*color: pink;*/
+    }
+
     h1 {
       color: lightgreen;
     }
@@ -186,6 +202,7 @@ function clearForm(oForm) {
       border-radius: 15px;
     }
 
+
     input, .input_txt {
       border-width: 4px;
       border-radius: 15px;
@@ -200,10 +217,17 @@ function clearForm(oForm) {
     }
 
     input {
-      width: 8vw;
+      width: 11vw;
     }
     .input_txt {
-      width: 70vw;
+      width: 67vw;
+    }
+    .btnHlp {
+      display: inline-block;
+      text-align: center;
+      float: left;
+      width: 10%;
+      color: lightgreen;
     }
     .inGlu {
       type: text; maxlength: 3;
@@ -217,6 +241,10 @@ function clearForm(oForm) {
       text-align: center;
       background-color: green;
       padding: 0.3em;
+    }
+
+    .pinkOver:hover {
+      color: pink;
     }
     
     .has_tip {
@@ -294,7 +322,7 @@ function clearForm(oForm) {
     }
     .close:hover,
     .close:focus {
-      color: #000;
+      color: #090;
       text-decoration: none;
       cursor: pointer;
     }    
@@ -304,6 +332,10 @@ function clearForm(oForm) {
       margin: 1px;
     }
 
+    td:hover {
+      text-shadow: 1px 2px black;
+      border-color: lightgreen;
+    }
 
     </style>
 </head>  
@@ -326,58 +358,58 @@ function clearForm(oForm) {
             <th name="InputParameter"></th>
           </tr>
           <tr>
-            <td class="input_txt" id="Glucose_measured_today_morning"></td>
-            <td><input class="inGlu" name="glucose0"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_today_morning"></td>
+            <td><input class="inGlu" name="glucose0" type="Number" min="0" max="999"></td>
           </tr>
           <tr>
-            <td class="input_txt" id="Insulin_given_yesterday_morning"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_morning"></td>
             <td><input class="inIns" name="insulin0"></td>
           </tr>
-          <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td>
+          <tr><td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_yesterday_noon"></td>
             <td><input class="inGlu" name="glucose1"></td>
           </tr>
           <tr>
-            <td class="input_txt" id="Insulin_given_yesterday_noon"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_noon"></td>
             <td><input class="inIns" type="text" name="insulin1"></td></tr>
           <tr>
-            <td class="input_txt" id="Glucose_measured_yesterday_evening"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_yesterday_evening"></td>
             <td><input class="inGlu" type="text" name="glucose2"></td>
           </tr>
           <tr>
-            <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_evening"></td>
             <td><input class="inIns" type="text" name="insulin2"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper('Optimal_glucose')" id="Optimal_glucose"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="Optimal_glucose"></td>
             <td><input type="text" name="optimalGlucose"></td>
           </tr>
           <tr>
-            <td class="input_txt" id="GIR"></td>
+            <td class="input_txt" onclick="helper(this.id)" id="GIR"></td>
             <td><input type="text" name="glucose_Insulin_Factor" onfocusout="check_data(igForm)"></td>
           </tr>
           <tr>
-            <td> </td>
+            <td class="input_txt btnHlp" onclick="helper(this.id)" id="CalcBtnH"></td>
             <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)"></td>
           </tr>
           <tr>
-            <td class="input_txt" id=rI0t></td>
+            <td class="input_txt" onclick="helper(this.id)" id=rI0t></td>
             <td><input readonly type="text" name="rInsulin0"></td>
           </tr>
           <tr>
-            <td class="input_txt" id=rI1t></td>
+            <td class="input_txt" onclick="helper(this.id)" id=rI1t></td>
             <td><input readonly type="text" name="rInsulin1"></td>
           </tr>
           <tr>
-            <td class="input_txt" id=rI2t></td>
+            <td class="input_txt" onclick="helper(this.id)" id=rI2t></td>
             <td><input readonly type="text" name="rInsulin2"></td>
           </tr>
           <tr>
-            <td> </td>
-            <td><input type="button" class="input_txt" id=ZeroBtn onClick="clearForm(this.form)"></td>
+            <td class="input_txt btnHlp" onclick="helper(this.id)" id="ZeroBtnH"></td>
+            <td><input type="button" class="input_txt pinkOver" id=ZeroBtn onClick="clearForm(this.form)"></td>
           </tr>
           <tr>
-            <td> </td>
-            <td><input type="submit" class="input_txt" id=SubmitBtn></td>
+            <td class="input_txt btnHlp" onclick="helper(this.id)" id="SubmitBtnH"></td>
+            <td><input type="submit" class="input_txt" onclick="helper(this.id)" id=SubmitBtn></td>
           </tr>
         </table>
       </form>
