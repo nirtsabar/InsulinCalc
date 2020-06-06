@@ -3,12 +3,12 @@
 
 <script type="text/javascript">
 
-  /* Initial parameters */ 
+  /* Initial parameters */
 let InitOptimalGlu = 180;
 let InitInsGluFactor = 18;
 let initInsulin = 0;
 
- /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */ 
+ /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
 let Dict = [
   "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
   "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר  TSABAR.NIR@GMAIL.COM",
@@ -32,19 +32,19 @@ let Dict = [
   "SubmitBtnH","?","האפשרות לשלוח - כרגע רק בשלב תכנון"
   ];
 
-function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/ 
+function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
   ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
   tID.innerHTML = ttext;
   if (tID.type = "button") {
     tID.setAttribute("value", ttext);
   }
 }
-function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/ 
+function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/
   htext=Dict[Dict.findIndex(x=>x==thID.id)+2];
   return htext;
 }
 
-function formInit(iForm) { 
+function formInit(iForm) {
 
   /* Initialization of form parameters*/
   iForm.glucose0.value = initInsulin;
@@ -55,15 +55,26 @@ function formInit(iForm) {
   iForm.insulin2.value = initInsulin;
   iForm.optimalGlucose.value = InitOptimalGlu;
   iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
-  
+
   /* Initialization of form texts*/
-  let TxtElmnts = document.getElementById("outer").
+  let Elmnts = document.getElementById("outer").
                   querySelectorAll(".input_txt, .has_tip");
-  for (let i = 0; i < TxtElmnts.length; i++) {
-    let tElem = TxtElmnts[i];
+  for (let i = 0; i < Elmnts.length; i++) {
+    let tElem = Elmnts[i];
     tP(tElem); // <= Placing the correct texts
     if (tElem.nodeName != "INPUT") {
       tElem.setAttribute('onclick','helper(this.id)'); //Putting helper popups
+    }
+  }
+  Elmnts = document.getElementById("outer").
+                  querySelectorAll(".inGlu, .inIns");
+  for (i = 0; i < Elmnts.length; i++) {
+    tElem = Elmnts[i];
+    tElem.type = "number";
+    tElem.min = 0;
+    tElem.max = 999;
+    if (tElem.classList.contains(".inIns")) {
+      tElem.max = 50;
     }
   }
 }
@@ -73,9 +84,9 @@ function show_tip(e_id) { /*. Use an html.element.id parameter*/
   if (etip.nextSibling.id==null) {
     etip.insertAdjacentHTML("afterend", '<p id="e_Tip" font-size="inherit"></p>');
     e_Tip.innerHTML=tPHelp(etip);
-    e_Tip.addEventListener("mouseout", hide_tip); 
+    e_Tip.addEventListener("mouseout", hide_tip);
   }
-} 
+}
 
 function hide_tip() {
   setTimeout(function() {
@@ -92,14 +103,14 @@ function hide_tip() {
         hTip.remove();
     } else {
         i --;
-        fs = fsN*i/100+"px"; 
+        fs = fsN*i/100+"px";
         hTip.style.height = fs;
       }
     }
   }, 800);
 }
 
-// When the user clicks the trigger, open the modal 
+// When the user clicks the trigger, open the modal
 var fader;
 var htimer;
 function helper(helpID) {
@@ -134,7 +145,7 @@ function fadeOut(fElem, hID) {
         fElem.style.opacity = 1;
         document.getElementById(hID).style.borderColor = "green";
     }
-  }, 50);  
+  }, 50);
 }
 
 function insulinDelta(glucose, igForm) {
@@ -145,7 +156,7 @@ function insulinDelta(glucose, igForm) {
 }
 
 function correctedInsulin(insulinDose) {
-  if (isNaN(insulinDose)) {  
+  if (isNaN(insulinDose)) {
     return "?";
   } else {
     if (insulinDose < 0) {
@@ -268,7 +279,7 @@ function clearForm(oForm) {
     .inIns {
       type: text; maxlength: 2;
     }
-    
+
     [type="button"], [type="submit"] {
       width: 17vw;
       text-align: center;
@@ -279,7 +290,7 @@ function clearForm(oForm) {
     .pinkOver:hover {
       color: pink;
     }
-    
+
     .has_tip {
       position: relative;
       display: block;
@@ -326,7 +337,7 @@ function clearForm(oForm) {
       background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
       position: fixed; /* Stay in place */
       text-align: center;
-      
+
     }
 
     /* Modal Content */
@@ -358,7 +369,7 @@ function clearForm(oForm) {
       color: #090;
       text-decoration: none;
       cursor: pointer;
-    }    
+    }
     .help_text {
       display: block;
       padding: 5%;
@@ -371,8 +382,8 @@ function clearForm(oForm) {
     }
 
     </style>
-</head>  
-  
+</head>
+
 <body onload="formInit(igForm)">
   <!--[if IE]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
@@ -451,7 +462,7 @@ function clearForm(oForm) {
   <!-- The Modal -->
   <div id="myModal" class="modal">
     <!-- Modal content -->
-    <div class="modal_content">      
+    <div class="modal_content">
       <p class="close">&times</p>
       <p class=help_text id=helpText>Oops, sorry, ask Dr. Tsabar...</p>
     </div>
