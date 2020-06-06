@@ -41,7 +41,6 @@ function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
 }
 function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/ 
   htext=Dict[Dict.findIndex(x=>x==thID.id)+2];
-  //thID.innerHTML = htext;
   return htext;
 }
 
@@ -61,25 +60,48 @@ function formInit(iForm) {
   let TxtElmnts = document.getElementById("outer").
                   querySelectorAll(".input_txt, .has_tip");
   for (let i = 0; i < TxtElmnts.length; i++) {
-    let elem = TxtElmnts[i];
-    tP(elem); //Placing the correct texts
+    let tElem = TxtElmnts[i];
+    tP(tElem); // <= Placing the correct texts
+    if (tElem.nodeName != "INPUT") {
+      tElem.setAttribute('onclick','helper(this.id)'); //Putting helper popups
+    }
   }
 }
 
 function show_tip(e_id) { /*. Use an html.element.id parameter*/
   etip = document.getElementById(e_id);
   if (etip.nextSibling.id==null) {
-    etip.insertAdjacentHTML("afterend", '<p id="e_Tip"></p>');
+    etip.insertAdjacentHTML("afterend", '<p id="e_Tip" font-size="inherit"></p>');
     e_Tip.innerHTML=tPHelp(etip);
     e_Tip.addEventListener("mouseout", hide_tip); 
   }
 } 
 
 function hide_tip() {
-  document.getElementById("e_Tip").remove();
+  setTimeout(function() {
+    hTip=document.getElementById("e_Tip");
+    hTip.style.color = "transparent";
+    let fs = window.getComputedStyle(hTip).getPropertyValue("height");
+    let fsN = Number(fs.slice(0,fs.length-2));
+    let i = 100;
+    let t = setInterval(frame, 4);
+    function frame() {
+      if (i < 0) {
+        clearInterval(t);
+        hTip.style.height = fsN+"px";
+        hTip.remove();
+    } else {
+        i --;
+        fs = fsN*i/100+"px"; 
+        hTip.style.height = fs;
+      }
+    }
+  }, 800);
 }
 
 // When the user clicks the trigger, open the modal 
+var fader;
+var htimer;
 function helper(helpID) {
   document.getElementById(helpID).style.borderColor = "lightgreen";
   // Get the help text by it's ID and place it in
@@ -88,17 +110,31 @@ function helper(helpID) {
   // Get the modal and display it
   let modal = document.getElementById("myModal");
   modal.style.display = "block";
-  setTimeout(hide_modal, 2000);
-  // Get the element that closes the modal
-  off_switch = document.getElementById("helpText");
-  // When the user clicks on this element (off_switch), close the modal
-  //modal.onclick = function() {
-  modal.onclick = hide_modal;
-  function hide_modal() {
-    modal.style.display = "none";
-    document.getElementById(helpID).style.borderColor = "green";
-  
-  }
+  modal.style.opacity = 1.0;
+  modal.onclick = function() {
+    clearInterval(fader);
+    clearTimeout(htimer);
+    fadeOut(modal,helpID);
+  };
+  let htimer = setTimeout(function() {
+    fadeOut(modal,helpID);
+  }, 2000);
+}
+function fadeOut(fElem, hID) {
+  //clearInterval(fader);
+  let fader = setInterval(function () {
+    if (!fElem.style.opacity) {
+        fElem.style.opacity = 1;
+    }
+    if (fElem.style.opacity > 0) {
+        fElem.style.opacity -= 0.1;
+    } else {
+        clearInterval(fader);
+        fElem.style.display = "none";
+        fElem.style.opacity = 1;
+        document.getElementById(hID).style.borderColor = "green";
+    }
+  }, 50);  
 }
 
 function insulinDelta(glucose, igForm) {
@@ -130,9 +166,7 @@ function update(this_form) {
 }
 
 function check_data(t_form) {
-/*   document.getElementById("demo1").innerHTML = "CHECK 3: " + t_form.glucose_Insulin_Factor.value;  
-   ^v checks 
-  t_form.glucose_Insulin_Factor.style.color="yellow";*/
+/* t_form.glucose_Insulin_Factor.style.color="yellow";*/
   if (Number(t_form.glucose_Insulin_Factor.value<=0)) {
     t_form.glucose_Insulin_Factor.value = InitInsGluFactor;
     show_remark(t_form.gItiptxt);
@@ -173,7 +207,6 @@ function clearForm(oForm) {
 
     td:hover {
       text-shadow: 2px 2px 8px #FF0000;
-      /*color: pink;*/
     }
 
     h1 {
@@ -358,58 +391,58 @@ function clearForm(oForm) {
             <th name="InputParameter"></th>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_today_morning"></td>
+            <td class="input_txt" id="Glucose_measured_today_morning"></td>
             <td><input class="inGlu" name="glucose0" type="Number" min="0" max="999"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_morning"></td>
+            <td class="input_txt" id="Insulin_given_yesterday_morning"></td>
             <td><input class="inIns" name="insulin0"></td>
           </tr>
-          <tr><td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_yesterday_noon"></td>
+          <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td>
             <td><input class="inGlu" name="glucose1"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_noon"></td>
+            <td class="input_txt" id="Insulin_given_yesterday_noon"></td>
             <td><input class="inIns" type="text" name="insulin1"></td></tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Glucose_measured_yesterday_evening"></td>
+            <td class="input_txt" id="Glucose_measured_yesterday_evening"></td>
             <td><input class="inGlu" type="text" name="glucose2"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Insulin_given_yesterday_evening"></td>
+            <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
             <td><input class="inIns" type="text" name="insulin2"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="Optimal_glucose"></td>
+            <td class="input_txt" id="Optimal_glucose"></td>
             <td><input type="text" name="optimalGlucose"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id="GIR"></td>
+            <td class="input_txt" id="GIR"></td>
             <td><input type="text" name="glucose_Insulin_Factor" onfocusout="check_data(igForm)"></td>
           </tr>
           <tr>
-            <td class="input_txt btnHlp" onclick="helper(this.id)" id="CalcBtnH"></td>
+            <td class="input_txt btnHlp" id="CalcBtnH"></td>
             <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id=rI0t></td>
+            <td class="input_txt" id=rI0t></td>
             <td><input readonly type="text" name="rInsulin0"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id=rI1t></td>
+            <td class="input_txt" id=rI1t></td>
             <td><input readonly type="text" name="rInsulin1"></td>
           </tr>
           <tr>
-            <td class="input_txt" onclick="helper(this.id)" id=rI2t></td>
+            <td class="input_txt" id=rI2t></td>
             <td><input readonly type="text" name="rInsulin2"></td>
           </tr>
           <tr>
-            <td class="input_txt btnHlp" onclick="helper(this.id)" id="ZeroBtnH"></td>
+            <td class="input_txt btnHlp" id="ZeroBtnH"></td>
             <td><input type="button" class="input_txt pinkOver" id=ZeroBtn onClick="clearForm(this.form)"></td>
           </tr>
           <tr>
-            <td class="input_txt btnHlp" onclick="helper(this.id)" id="SubmitBtnH"></td>
-            <td><input type="submit" class="input_txt" onclick="helper(this.id)" id=SubmitBtn></td>
+            <td class="input_txt btnHlp" id="SubmitBtnH"></td>
+            <td><input type="submit" class="input_txt" id=SubmitBtn></td>
           </tr>
         </table>
       </form>
