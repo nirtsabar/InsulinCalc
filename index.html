@@ -93,10 +93,12 @@ function formInit(iForm) {
         } else {
           this.value = "";
         }
-        document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (inElem) {
+        document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']")
+            .forEach(function (inElem) {
                   inElem.value = inElem.value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
+        lastIndex=visFocussable.indexOf(document.activeElement);
                 }
-        )
+            )
       })
     })
   }
@@ -110,6 +112,7 @@ function checkIfEnter (the_Key) {
 }
 
 let lastIndex = -1; //global for last 'tab' / 'Enter' focus
+let visFocussable;
 
 function GoNext() {
 //add all elements we want to include in our selection
@@ -122,7 +125,7 @@ let focusabl = Array.from(
 );
 if (document.activeElement) {
   //focusabl.push(document.activeElement);<== delete this later
-  let visFocussable = Array.prototype.filter.call(focusabl, function (element) {
+  visFocussable = Array.prototype.filter.call(focusabl, function (element) {
              //check for visibility while always include the current activeElement
              return element.offsetWidth > 0 && element.offsetHeight > 0 || element === document.activeElement
            });
@@ -243,7 +246,7 @@ function update(this_form) {
 
 function clearForm(oForm) {
   oForm.reset();
-  alert("oForm.reset();");
+  //alert("oForm.reset();");
 }
 
 </script>
@@ -444,57 +447,57 @@ function clearForm(oForm) {
         <table id="calc">
           <tr>
             <td class="input_txt" id="Glucose_measured_today_morning"></td>
-            <td><input class="inGlu" autofocus name="glucose0" min="0" max="999" tabindex="1"></td>
+            <td><input type="number" label="glucose0" class="inGlu" autofocus name="glucose0" min="0" max="999" tabindex="1"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_morning"></td>
-            <td><input class="inIns" name="insulin0" tabindex="2"></td>
+            <td><input type="number" label="insulin0" class="inIns" name="insulin0" tabindex="2"></td>
           </tr>
           <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td>
-            <td><input class="inGlu" name="glucose1" tabindex="3"></td>
+            <td><input type="number" label="glucose1" class="inGlu" name="glucose1" tabindex="3"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_noon"></td>
-            <td><input class="inIns" name="insulin1" tabindex="4"></td></tr>
+            <td><input type="number" class="inIns" label="insulin1" name="insulin1" tabindex="4"></td></tr>
           <tr>
             <td class="input_txt" id="Glucose_measured_yesterday_evening"></td>
-            <td><input class="inGlu" name="glucose2"  placeholder="0" tabindex="5"></td>
+            <td><input type="number" class="inGlu"  label="glucose2" name="glucose2"  placeholder="0" tabindex="5"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
-            <td><input class="inIns" name="insulin2" tabindex="6"></td>
+            <td><input type="number" class="inIns" label="insulin2" name="insulin2" tabindex="6"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Optimal_glucose"></td>
-            <td><input name="optimalGlucose"></td>
+            <td><input type="tel" label="optimalGlucose" name="optimalGlucose"></td>
           </tr>
           <tr>
             <td class="input_txt" id="GIR"></td>
-            <td><input name="glucose_Insulin_Factor"></td>
+            <td><input type="tel" label="glucose_Insulin_Factor" name="glucose_Insulin_Factor"></td>
           </tr>
           <tr>
             <td class="input_txt btnHlp" id="CalcBtnH"></td>
-            <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)" tabindex="7"></td>
+            <td><input type="button" label="CalcBtn" class="input_txt" id=CalcBtn onClick="update(this.form)" tabindex="7"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI0t></td>
-            <td><input readonly name="rInsulin0"></td>
+            <td><input readonly label="rInsulin0" name="rInsulin0"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI1t></td>
-            <td><input readonly name="rInsulin1"></td>
+            <td><input readonly label="rInsulin1" name="rInsulin1"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI2t></td>
-            <td><input readonly name="rInsulin2"></td>
+            <td><input readonly label="rInsulin2" name="rInsulin2"></td>
           </tr>
           <tr>
             <td class="input_txt btnHlp" id="ZeroBtnH"></td>
-            <td><input type="button" class="input_txt pinkOver" id=ZeroBtn onClick="clearForm(this.form)"></td>
+            <td><input type="button" label="ZeroBtn" class="input_txt pinkOver" id=ZeroBtn onClick="clearForm(this.form)"></td>
           </tr>
           <tr>
             <td class="input_txt btnHlp" id="SubmitBtnH"></td>
-            <td><input type="submit" class="input_txt" id=SubmitBtn></td>
+            <td><input type="submit" label="SubmitBtn" class="input_txt" id=SubmitBtn></td>
           </tr>
         </table>
       </form>
