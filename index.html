@@ -1,8 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="he">
-
+<link rel="shortcut icon" type="image/x-icon" href="img/logo.gif" />
 <script type="text/javascript">
-
   /* Initial parameters */
 let InitOptimalGlu = 180;
 let InitInsGluFactor = 18;
@@ -35,17 +34,15 @@ let Dict = [
 function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
   ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
   tID.innerHTML = ttext;
-  if (tID.type = "button") {
+  if (tID.type="button") { //with single '=' is true also for "submit"
     tID.setAttribute("value", ttext);
   }
 }
 function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/
-  htext=Dict[Dict.findIndex(x=>x==thID.id)+2];
-  return htext;
+  return Dict[Dict.findIndex(x=>x===thID.id)+2];
 }
 
 function formInit(iForm) {
-
   /* Initialization of form parameters*/
   iForm.glucose0.value = initInsulin;
   iForm.glucose1.value = initInsulin;
@@ -57,67 +54,136 @@ function formInit(iForm) {
   iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
 
   /* Initialization of form texts*/
-  let Elmnts = document.getElementById("outer").
-                  querySelectorAll(".input_txt, .has_tip");
-  for (let i = 0; i < Elmnts.length; i++) {
-    let tElem = Elmnts[i];
+  document.getElementById("outer").querySelectorAll(".input_txt, .has_tip").forEach(function (tElem) {
     tP(tElem); // <= Placing the correct texts
-    if (tElem.nodeName != "INPUT") {
-      tElem.setAttribute('onclick','helper(this.id)'); //Putting helper popups
+    if (tElem.nodeName !== "INPUT") {
+      tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
     }
-  }
-  Elmnts = document.getElementById("outer").
-                  querySelectorAll(".inGlu, .inIns");
-  for (i = 0; i < Elmnts.length; i++) {
-    tElem = Elmnts[i];
-    tElem.type = "number";
-    tElem.min = 0;
-    tElem.max = 999;
-    if (tElem.classList.contains(".inIns")) {
-      tElem.max = 50;
-    }
-  }
-}
-
-function show_tip(e_id) { /*. Use an html.element.id parameter*/
-  etip = document.getElementById(e_id);
-  if (etip.nextSibling.id==null) {
-    etip.insertAdjacentHTML("afterend", '<p id="e_Tip" font-size="inherit"></p>');
-    e_Tip.innerHTML=tPHelp(etip);
-    e_Tip.addEventListener("mouseout", hide_tip);
-  }
-}
-
-function hide_tip() {
-  setTimeout(function() {
-    hTip=document.getElementById("e_Tip");
-    hTip.style.color = "transparent";
-    let fs = window.getComputedStyle(hTip).getPropertyValue("height");
-    let fsN = Number(fs.slice(0,fs.length-2));
-    let i = 100;
-    let t = setInterval(frame, 4);
-    function frame() {
-      if (i < 0) {
-        clearInterval(t);
-        hTip.style.height = fsN+"px";
-        hTip.remove();
+  })
+  // Defining input elements filters
+  document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (tElem) {
+    if (tElem.classList.contains("inIns")) {
+      setFilterInput(tElem,
+              function (value) {
+                return /(^$)|(^[0-9]{1,2}$)/.test(value);
+              })
     } else {
-        i --;
-        fs = fsN*i/100+"px";
-        hTip.style.height = fs;
+      setFilterInput(tElem,
+              function (value) {
+                return /^$|^[0-9]{1,3}$/.test(value)
+              })
+    }
+  })
+
+  // Restricts input for the given textbox to the given inputFilter function.
+  function setFilterInput(textbox, inputFilter) {
+    ["input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "onmouseleave", "select", "contextmenu", "drop", "change", "paste", "animationstart"]
+    .forEach(function (event) {
+      textbox.addEventListener(event, function () {
+        if (inputFilter(this.value)) {
+          if (this.value !== "") {
+            this.value = Number(this.value);
+          }
+          this.oldValue = this.value;
+          this.oldSelectionStart = this.selectionStart;
+          this.oldSelectionEnd = this.selectionEnd;
+        } else if (this.hasOwnProperty("oldValue")) {
+          this.value = this.oldValue;
+          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+        } else {
+          this.value = "";
+        }
+        document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (inElem) {
+                  inElem.value = inElem.value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
+                }
+        )
+      })
+    })
+  }
+
+  window.addEventListener("keydown", function (event) {checkIfEnter(event.key)});
+}
+function checkIfEnter (the_Key) {
+    if (the_Key==="Enter"){
+      GoNext();
+    }
+}
+
+let lastIndex = -1; //global for last 'tab' / 'Enter' focus
+
+function GoNext() {
+//add all elements we want to include in our selection
+let focusabl = Array.from(
+        document.querySelectorAll(
+                'button:not([disabled]), ' +
+                'input[type=text]:not([disabled]), ' +
+                'input[tabindex]:not([disabled]):not([tabindex="-1"])'
+        )
+);
+if (document.activeElement) {
+  //focusabl.push(document.activeElement);<== delete this later
+  let visFocussable = Array.prototype.filter.call(focusabl, function (element) {
+             //check for visibility while always include the current activeElement
+             return element.offsetWidth > 0 && element.offsetHeight > 0 || element === document.activeElement
+           });
+  let index = visFocussable.indexOf(document.activeElement);
+  console.log(focusabl+" index of active one is "+index);//<=
+  if (index === -1) {
+    index = lastIndex
+  }
+  if (index > -1) {
+      let nextElement = visFocussable[index + 1] || visFocussable[0];
+      nextElement.focus();
+      lastIndex = visFocussable.indexOf(nextElement);
+  }
+}
+}
+
+
+function show_tip(etip) { /*. Use an html.element.id parameter*/
+  if (!etip.hasOwnProperty('nextSibling')) {
+    etip.insertAdjacentHTML('afterend', '<p id="e_Tip"></p>');
+    e_Tip.addEventListener("onmouseleave", hide_tip(etip));
+    e_Tip.innerHTML=tPHelp(etip);
+  }
+}
+
+function hide_tip(etip) {
+  setTimeout(function() {
+    let hTip=document.getElementById("e_Tip");
+    if (hTip!==null) {
+      hTip.style.color = "transparent";
+      let fs = window.getComputedStyle(hTip).getPropertyValue("height");
+      let fsN = Number(fs.slice(0, fs.length - 2));
+      let i = 100;
+      let t = setInterval(frame, 4);
+
+      function frame() {
+        if (i < 0) {
+          clearInterval(t);
+          hTip.style.height = fsN + "px";
+          etip.removeEventListener("onmouseleave", hide_tip(etip));
+          hTip.remove();
+        } else {
+          i--;
+          fs = fsN * i / 100 + "px";
+          hTip.style.height = fs;
+        }
       }
     }
   }, 800);
 }
 
 // When the user clicks the trigger, open the modal
-var fader;
-var htimer;
-function helper(helpID) {
-  document.getElementById(helpID).style.borderColor = "lightgreen";
+let fader;
+let htimer;
+
+function helper(helpE) {
+  helpE.style.borderColor = "lightgreen";
   // Get the help text by it's ID and place it in
-  help_tP = tPHelp(document.getElementById(helpID));
-  document.getElementById("helpText").innerHTML = help_tP;
+  document.getElementById("helpText").innerHTML =
+          tPHelp(helpE);
+  //help_tP;
   // Get the modal and display it
   let modal = document.getElementById("myModal");
   modal.style.display = "block";
@@ -125,15 +191,14 @@ function helper(helpID) {
   modal.onclick = function() {
     clearInterval(fader);
     clearTimeout(htimer);
-    fadeOut(modal,helpID);
+    fadeOut(modal,helpE);
   };
-  let htimer = setTimeout(function() {
-    fadeOut(modal,helpID);
+  htimer = setTimeout(function() {
+    fadeOut(modal,helpE);
   }, 2000);
 }
 function fadeOut(fElem, hID) {
-  //clearInterval(fader);
-  let fader = setInterval(function () {
+  fader = setInterval(function () {
     if (!fElem.style.opacity) {
         fElem.style.opacity = 1;
     }
@@ -143,7 +208,7 @@ function fadeOut(fElem, hID) {
         clearInterval(fader);
         fElem.style.display = "none";
         fElem.style.opacity = 1;
-        document.getElementById(hID).style.borderColor = "green";
+        hID.style.borderColor = "";
     }
   }, 50);
 }
@@ -151,7 +216,7 @@ function fadeOut(fElem, hID) {
 function insulinDelta(glucose, igForm) {
   let delta = 0;
   delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
-  if (glucose == "") {delta = "?"};
+  if (glucose === "") {delta = "?"}
   return delta;
 }
 
@@ -176,16 +241,9 @@ function update(this_form) {
   this_form.rInsulin2.value = correctedInsulin(ri2);
 }
 
-function check_data(t_form) {
-/* t_form.glucose_Insulin_Factor.style.color="yellow";*/
-  if (Number(t_form.glucose_Insulin_Factor.value<=0)) {
-    t_form.glucose_Insulin_Factor.value = InitInsGluFactor;
-    show_remark(t_form.gItiptxt);
-  }
-}
-
 function clearForm(oForm) {
   oForm.reset();
+  alert("oForm.reset();");
 }
 
 </script>
@@ -195,7 +253,8 @@ function clearForm(oForm) {
   <title id="Insulin_Glucose_Header">אינסולין לפי רמת סוכר בדם</title>
   <meta name="description" content="Learning. The hard way...">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<!--  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
+<!--
+//  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
 -->
 
   <style>
@@ -231,9 +290,9 @@ function clearForm(oForm) {
       horiz-align: center;
       border-radius: 20px;
       background-color: darkgreen;
-      -moz-background-clip:    padding;
-      background-clip:         padding-box;
-      -webkit-background-clip: padding-box;
+      /*-moz-background-clip:    padding;*/
+      /*background-clip:         padding-box;*/
+      /*-webkit-background-clip: padding-box;*/
     }
 
     table {
@@ -263,6 +322,7 @@ function clearForm(oForm) {
     input {
       width: 11vw;
     }
+
     .input_txt {
       width: 67vw;
     }
@@ -272,12 +332,6 @@ function clearForm(oForm) {
       float: left;
       width: 10%;
       color: lightgreen;
-    }
-    .inGlu {
-      type: text; maxlength: 3;
-    }
-    .inIns {
-      type: text; maxlength: 2;
     }
 
     [type="button"], [type="submit"] {
@@ -313,15 +367,6 @@ function clearForm(oForm) {
       border-color: black;/***/
       border-width: 1px;
     }
-    #gItiptxt {
-      top: 1em;
-    }
-
-
-    .eTip {
-      padding: 2em;
-    }
-
 
     /* The Modal (background) */
     .modal {
@@ -392,60 +437,56 @@ function clearForm(oForm) {
   <div id="outer">
     <div id="main_title">
         <h1>תכנית אינסולין להיום </h1>
-        <p class="has_tip" id="disclaimer" onmouseover="show_tip('disclaimer')"></p>
+        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
     </div>
     <div id="ins_form">
         <form action=http://localhost:5000/form method="post" id="igForm">
         <table id="calc">
           <tr>
-            <th name="InputText"></th>
-            <th name="InputParameter"></th>
-          </tr>
-          <tr>
             <td class="input_txt" id="Glucose_measured_today_morning"></td>
-            <td><input class="inGlu" name="glucose0" type="Number" min="0" max="999"></td>
+            <td><input class="inGlu" autofocus name="glucose0" min="0" max="999" tabindex="1"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_morning"></td>
-            <td><input class="inIns" name="insulin0"></td>
+            <td><input class="inIns" name="insulin0" tabindex="2"></td>
           </tr>
           <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td>
-            <td><input class="inGlu" name="glucose1"></td>
+            <td><input class="inGlu" name="glucose1" tabindex="3"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_noon"></td>
-            <td><input class="inIns" type="text" name="insulin1"></td></tr>
+            <td><input class="inIns" name="insulin1" tabindex="4"></td></tr>
           <tr>
             <td class="input_txt" id="Glucose_measured_yesterday_evening"></td>
-            <td><input class="inGlu" type="text" name="glucose2"></td>
+            <td><input class="inGlu" name="glucose2"  placeholder="0" tabindex="5"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
-            <td><input class="inIns" type="text" name="insulin2"></td>
+            <td><input class="inIns" name="insulin2" tabindex="6"></td>
           </tr>
           <tr>
             <td class="input_txt" id="Optimal_glucose"></td>
-            <td><input type="text" name="optimalGlucose"></td>
+            <td><input name="optimalGlucose"></td>
           </tr>
           <tr>
             <td class="input_txt" id="GIR"></td>
-            <td><input type="text" name="glucose_Insulin_Factor" onfocusout="check_data(igForm)"></td>
+            <td><input name="glucose_Insulin_Factor"></td>
           </tr>
           <tr>
             <td class="input_txt btnHlp" id="CalcBtnH"></td>
-            <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)"></td>
+            <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)" tabindex="7"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI0t></td>
-            <td><input readonly type="text" name="rInsulin0"></td>
+            <td><input readonly name="rInsulin0"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI1t></td>
-            <td><input readonly type="text" name="rInsulin1"></td>
+            <td><input readonly name="rInsulin1"></td>
           </tr>
           <tr>
             <td class="input_txt" id=rI2t></td>
-            <td><input readonly type="text" name="rInsulin2"></td>
+            <td><input readonly name="rInsulin2"></td>
           </tr>
           <tr>
             <td class="input_txt btnHlp" id="ZeroBtnH"></td>
