@@ -1,0 +1,511 @@
+<!doctype html>
+<html class="no-js" lang="he">
+<link rel="shortcut icon" type="image/x-icon" href="img/logo.gif" />
+<script type="text/javascript">
+  /* Initial parameters */
+let InitOptimalGlu = 180;
+let InitInsGluFactor = 18;
+let initInsulin = 0;
+
+ /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
+let Dict = [
+  "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
+  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר  TSABAR.NIR@GMAIL.COM",
+  "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","סוכר שנמדד <i><b>היום</b></i> הבוקר בצום",
+  "Insulin_given_yesterday_morning","אינסולין שניתן אתמול בבוקר","כמה יחידות אינסולין הוזרקו אתמול בבוקר?",
+  "Glucose_measured_yesterday_noon","סוכר שנמדד אתמול בצהרים","סוכר שנמדד בצהרים אתמול",
+  "Insulin_given_yesterday_noon","אינסולין שניתן אתמול בצהרים","אינסולין שניתן בצהרים אתמול",
+  "Glucose_measured_yesterday_evening","סוכר שנמדד אתמול בערב","סוכר שנמדד בערב אתמול",
+  "Insulin_given_yesterday_evening","אינסולין שניתן אתמול בערב","כמה אינסולין הוזרק בערב אתמול ?",
+  "Optimal_glucose","רמת סוכר אופטימלית","את רמת הסוכר האופטימלית יש להתאים לרמת הסיכון לנפילות סוכר, לגיל ולמצב התפקודי",
+  "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה יביא לתיקון עדין יותר",
+  "gItiptxt","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי","רמת הסוכר האופטימלית בטיפול תרופתי גבוהה יותר ככל שהגיל עולה או המצב התפקודי יורד. בסוכרת מסוג 2 עדיף להפחית סוכר באמצעות תזונה נכונה מאשר באמצעות תרופות",
+  "rI0t","אינסולין מחושב להבוקר","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+  "rI1t","אינסולין מחושב לצהרים","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+  "rI2t","אינסולין ארוך-טווח מחושב","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול" ,
+  "CalcBtn","חשב","סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
+  "CalcBtnH","?","סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
+  "ZeroBtn","איפוס","לחיצה לאיפוס מלא. לאתחול מחדש - ניתן לרענן את הדף",
+  "ZeroBtnH","?","לחיצה לאיפוס מלא. לאתחול מחדש - ניתן לרענן את הדף",
+  "SubmitBtn","שלח","אופס... עובד על זה...",
+  "SubmitBtnH","?","האפשרות לשלוח - כרגע רק בשלב תכנון"
+  ];
+
+function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
+  ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
+  tID.innerHTML = ttext;
+  if (tID.type="button") { //with single '=' is true also for "submit"
+    tID.setAttribute("value", ttext);
+  }
+}
+function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/
+  return Dict[Dict.findIndex(x=>x===thID.id)+2];
+}
+
+function formInit(iForm) {
+  /* Initialization of form parameters*/
+  iForm.glucose0.value = initInsulin;
+  iForm.glucose1.value = initInsulin;
+  iForm.glucose2.value = "";
+  iForm.insulin0.value = initInsulin;
+  iForm.insulin1.value = initInsulin;
+  iForm.insulin2.value = initInsulin;
+  iForm.optimalGlucose.value = InitOptimalGlu;
+  iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
+
+  /* Initialization of form texts*/
+  document.getElementById("outer").querySelectorAll(".input_txt, .has_tip").forEach(function (tElem) {
+    tP(tElem); // <= Placing the correct texts
+    if (tElem.nodeName !== "INPUT") {
+      tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
+    }
+  })
+  // Defining input elements filters
+  document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (tElem) {
+    if (tElem.classList.contains("inIns")) {
+      setFilterInput(tElem,
+              function (value) {
+                return /(^$)|(^[0-9]{1,2}$)/.test(value);
+              })
+    } else {
+      setFilterInput(tElem,
+              function (value) {
+                return /^$|^[0-9]{1,3}$/.test(value)
+              })
+    }
+  })
+
+  // Restricts input for the given textbox to the given inputFilter function.
+  function setFilterInput(textbox, inputFilter) {
+    ["input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "onmouseleave", "select", "contextmenu", "drop", "change", "paste", "animationstart"]
+    .forEach(function (event) {
+      textbox.addEventListener(event, function () {
+        if (inputFilter(this.value)) {
+          if (this.value !== "") {
+            this.value = Number(this.value);
+          }
+          this.oldValue = this.value;
+          this.oldSelectionStart = this.selectionStart;
+          this.oldSelectionEnd = this.selectionEnd;
+        } else if (this.hasOwnProperty("oldValue")) {
+          this.value = this.oldValue;
+          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+        } else {
+          this.value = "";
+        }
+        document.getElementById("outer").querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (inElem) {
+                  inElem.value = inElem.value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
+                }
+        )
+      })
+    })
+  }
+
+  window.addEventListener("keydown", function (event) {checkIfEnter(event.key)});
+}
+function checkIfEnter (the_Key) {
+    if (the_Key==="Enter"){
+      GoNext();
+    }
+}
+
+let lastIndex = -1; //global for last 'tab' / 'Enter' focus
+
+function GoNext() {
+//add all elements we want to include in our selection
+let focusabl = Array.from(
+        document.querySelectorAll(
+                'button:not([disabled]), ' +
+                'input[type=text]:not([disabled]), ' +
+                'input[tabindex]:not([disabled]):not([tabindex="-1"])'
+        )
+);
+if (document.activeElement) {
+  //focusabl.push(document.activeElement);<== delete this later
+  let visFocussable = Array.prototype.filter.call(focusabl, function (element) {
+             //check for visibility while always include the current activeElement
+             return element.offsetWidth > 0 && element.offsetHeight > 0 || element === document.activeElement
+           });
+  let index = visFocussable.indexOf(document.activeElement);
+  console.log(focusabl+" index of active one is "+index);//<=
+  if (index === -1) {
+    index = lastIndex
+  }
+  if (index > -1) {
+      let nextElement = visFocussable[index + 1] || visFocussable[0];
+      nextElement.focus();
+      lastIndex = visFocussable.indexOf(nextElement);
+  }
+}
+}
+
+
+function show_tip(etip) { /*. Use an html.element.id parameter*/
+  if (!etip.hasOwnProperty('nextSibling')) {
+    etip.insertAdjacentHTML('afterend', '<p id="e_Tip"></p>');
+    e_Tip.addEventListener("onmouseleave", hide_tip(etip));
+    e_Tip.innerHTML=tPHelp(etip);
+  }
+}
+
+function hide_tip(etip) {
+  setTimeout(function() {
+    let hTip=document.getElementById("e_Tip");
+    if (hTip!==null) {
+      hTip.style.color = "transparent";
+      let fs = window.getComputedStyle(hTip).getPropertyValue("height");
+      let fsN = Number(fs.slice(0, fs.length - 2));
+      let i = 100;
+      let t = setInterval(frame, 4);
+
+      function frame() {
+        if (i < 0) {
+          clearInterval(t);
+          hTip.style.height = fsN + "px";
+          etip.removeEventListener("onmouseleave", hide_tip(etip));
+          hTip.remove();
+        } else {
+          i--;
+          fs = fsN * i / 100 + "px";
+          hTip.style.height = fs;
+        }
+      }
+    }
+  }, 800);
+}
+
+// When the user clicks the trigger, open the modal
+let fader;
+let htimer;
+
+function helper(helpE) {
+  helpE.style.borderColor = "lightgreen";
+  // Get the help text by it's ID and place it in
+  document.getElementById("helpText").innerHTML =
+          tPHelp(helpE);
+  //help_tP;
+  // Get the modal and display it
+  let modal = document.getElementById("myModal");
+  modal.style.display = "block";
+  modal.style.opacity = 1.0;
+  modal.onclick = function() {
+    clearInterval(fader);
+    clearTimeout(htimer);
+    fadeOut(modal,helpE);
+  };
+  htimer = setTimeout(function() {
+    fadeOut(modal,helpE);
+  }, 2000);
+}
+function fadeOut(fElem, hID) {
+  fader = setInterval(function () {
+    if (!fElem.style.opacity) {
+        fElem.style.opacity = 1;
+    }
+    if (fElem.style.opacity > 0) {
+        fElem.style.opacity -= 0.1;
+    } else {
+        clearInterval(fader);
+        fElem.style.display = "none";
+        fElem.style.opacity = 1;
+        hID.style.borderColor = "";
+    }
+  }, 50);
+}
+
+function insulinDelta(glucose, igForm) {
+  let delta = 0;
+  delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
+  if (glucose === "") {delta = "?"}
+  return delta;
+}
+
+function correctedInsulin(insulinDose) {
+  if (isNaN(insulinDose)) {
+    return "?";
+  } else {
+    if (insulinDose < 0) {
+      return 0;}
+    else {
+      return insulinDose.toFixed(0);
+    }
+  }
+}
+
+function update(this_form) {
+  let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value, this_form);
+  this_form.rInsulin0.value = correctedInsulin(ri0);
+  let ri1 = Number(this_form.insulin1.value) + insulinDelta(this_form.glucose2.value, this_form);
+  this_form.rInsulin1.value = correctedInsulin(ri1);
+  let ri2 = Number(this_form.insulin2.value) + insulinDelta(this_form.glucose0.value, this_form);
+  this_form.rInsulin2.value = correctedInsulin(ri2);
+}
+
+function clearForm(oForm) {
+  oForm.reset();
+  alert("oForm.reset();");
+}
+
+</script>
+
+<head>
+  <meta charset="utf-8">
+  <title id="Insulin_Glucose_Header">אינסולין לפי רמת סוכר בדם</title>
+  <meta name="description" content="Learning. The hard way...">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+//  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
+-->
+
+  <style>
+
+    html {
+      margin: 0;
+      color: white;
+      font-size: 4vw;
+      height:100vh;
+      width:97.5vw;
+      direction: rtl;
+    }
+
+    body {
+      position: relative;
+      margin: 1vw;
+      padding: 1vw;
+      background-color: green;
+    }
+
+    td:hover {
+      text-shadow: 2px 2px 8px #FF0000;
+    }
+
+    h1 {
+      color: lightgreen;
+    }
+
+    h1, p, form {
+      display: block;
+      margin: 1vw;
+      text-align: center;
+      horiz-align: center;
+      border-radius: 20px;
+      background-color: darkgreen;
+      /*-moz-background-clip:    padding;*/
+      /*background-clip:         padding-box;*/
+      /*-webkit-background-clip: padding-box;*/
+    }
+
+    table {
+      padding: 2vw;
+    }
+
+    td {
+      border-color: lightgreen;
+      border-width: 1px;
+      border-radius: 15px;
+    }
+
+
+    input, .input_txt {
+      border-width: 4px;
+      border-radius: 15px;
+      border-style: solid;
+      border-color: green;/*****/
+      background-color: darkgreen;
+      font-family: inherit;
+      font-size: 5vw;
+      color: inherit;
+      text-align: right;
+      padding: 0.5em;
+    }
+
+    input {
+      width: 11vw;
+    }
+
+    .input_txt {
+      width: 67vw;
+    }
+    .btnHlp {
+      display: inline-block;
+      text-align: center;
+      float: left;
+      width: 10%;
+      color: lightgreen;
+    }
+
+    [type="button"], [type="submit"] {
+      width: 17vw;
+      text-align: center;
+      background-color: green;
+      padding: 0.3em;
+    }
+
+    .pinkOver:hover {
+      color: pink;
+    }
+
+    .has_tip {
+      position: relative;
+      display: block;
+    }
+    .has_tip:hover .tip {
+        visibility: visible;
+    }
+    .tip {
+      visibility: hidden;
+      display: block;
+      top: 1.2em;
+      position: relative;
+      width: 50vw;
+      Right: 0;
+      background-color: #004d00;
+      color: #DDFFDD;
+      text-align: center;
+      border-radius: 6px;
+      padding: 0 1em;
+      border-color: black;/***/
+      border-width: 1px;
+    }
+
+    /* The Modal (background) */
+    .modal {
+      display: none; /*  = Hidden by default   ****/
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 70%; /* Full width */
+      height: 100%; /* Full height */
+      padding: 15%;
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      position: fixed; /* Stay in place */
+      text-align: center;
+
+    }
+
+    /* Modal Content */
+    .modal_content {
+      top: 0;
+      left: 0;
+      background-color: #dfd;
+      padding: 10%;
+      border: 1px solid #888;
+      border-radius: 25px;
+      width: 60%;
+      /*height: 30%;*/
+      display: inline-block;
+      text-align: center;
+    }
+     /*The Close Button */
+    .close {
+      color: #0F0;
+      background-color: transparent;
+      display: block;
+      width: 1em;
+      right: 0;
+      font-size: 200%;
+      font-weight: bold;
+      text-shadow: 1px 1px #0a0 ;
+    }
+    .close:hover,
+    .close:focus {
+      color: #090;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .help_text {
+      display: block;
+      padding: 5%;
+      margin: 1px;
+    }
+
+    td:hover {
+      text-shadow: 1px 2px black;
+      border-color: lightgreen;
+    }
+
+    </style>
+</head>
+
+<body onload="formInit(igForm)">
+  <!--[if IE]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+  <![endif]-->
+
+  <div id="outer">
+    <div id="main_title">
+        <h1>תכנית אינסולין להיום </h1>
+        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
+    </div>
+    <div id="ins_form">
+        <form action=http://localhost:5000/form method="post" id="igForm">
+        <table id="calc">
+          <tr>
+            <td class="input_txt" id="Glucose_measured_today_morning"></td>
+            <td><input class="inGlu" autofocus name="glucose0" min="0" max="999" tabindex="1"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="Insulin_given_yesterday_morning"></td>
+            <td><input class="inIns" name="insulin0" tabindex="2"></td>
+          </tr>
+          <tr><td class="input_txt" id="Glucose_measured_yesterday_noon"></td>
+            <td><input class="inGlu" name="glucose1" tabindex="3"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="Insulin_given_yesterday_noon"></td>
+            <td><input class="inIns" name="insulin1" tabindex="4"></td></tr>
+          <tr>
+            <td class="input_txt" id="Glucose_measured_yesterday_evening"></td>
+            <td><input class="inGlu" name="glucose2"  placeholder="0" tabindex="5"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="Insulin_given_yesterday_evening"></td>
+            <td><input class="inIns" name="insulin2" tabindex="6"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="Optimal_glucose"></td>
+            <td><input name="optimalGlucose"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id="GIR"></td>
+            <td><input name="glucose_Insulin_Factor"></td>
+          </tr>
+          <tr>
+            <td class="input_txt btnHlp" id="CalcBtnH"></td>
+            <td><input type="button" class="input_txt" id=CalcBtn onClick="update(this.form)" tabindex="7"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id=rI0t></td>
+            <td><input readonly name="rInsulin0"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id=rI1t></td>
+            <td><input readonly name="rInsulin1"></td>
+          </tr>
+          <tr>
+            <td class="input_txt" id=rI2t></td>
+            <td><input readonly name="rInsulin2"></td>
+          </tr>
+          <tr>
+            <td class="input_txt btnHlp" id="ZeroBtnH"></td>
+            <td><input type="button" class="input_txt pinkOver" id=ZeroBtn onClick="clearForm(this.form)"></td>
+          </tr>
+          <tr>
+            <td class="input_txt btnHlp" id="SubmitBtnH"></td>
+            <td><input type="submit" class="input_txt" id=SubmitBtn></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+  <!-- The Modal -->
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal_content">
+      <p class="close">&times</p>
+      <p class=help_text id=helpText>Oops, sorry, ask Dr. Tsabar...</p>
+    </div>
+  </div>
+</body>
