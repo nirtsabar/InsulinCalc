@@ -7,7 +7,7 @@ const InitOptimalGlu = 180;
 const InitInsGluFactor = 18;
 const initInsulin = 0;
 const minGlucose = 10;
-const maxGlucose = 999;
+const maxGlucose = 500;
 const minInsulin = 0;
 const maxInsulin = 50;
 
@@ -36,7 +36,7 @@ let Dict = [
   ];
 
 function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
-  ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
+  let ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
   tID.innerHTML = ttext;
   if (tID.type="button") { //with single '=' is true also for "submit"
     tID.setAttribute("value", ttext);
@@ -58,10 +58,12 @@ function formInit(iForm) {
   iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
 
   /* Initialization of form texts*/
-  iForm.querySelectorAll(".input_txt, .has_tip").forEach(function (tElem) {
-    tP(tElem); // <= Placing the correct texts
-    if (tElem.nodeName !== "INPUT") {
-      tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
+  document.getElementById("outer").querySelectorAll(".input_txt, .has_tip").
+    forEach(function (tElem) {
+        console.log("tElem="+tElem.id);//todo: remove code
+        tP(tElem); // <= Placing the correct texts
+        if (tElem.nodeName !== "INPUT") {
+          tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
     }
   })
   // Defining input elements filters
@@ -115,11 +117,11 @@ function formInit(iForm) {
       checkIfEnter(document.activeElement, event.key);
   });
 
-  this.document.querySelectorAll("[type='range'").forEach(function (slider) {
+  this.document.querySelectorAll("[type='range']").forEach(function (slider) {
         ["input"]//["mousedown"]//, , "onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", , "mouseup", "drop", "touchstart", "drag"
         .forEach(function (event) {
             window.addEventListener(event, function () {
-                console.log("event="+event); // TODO: remove code
+               // console.log("event="+event); // TODO: remove code
                 updateNum_Slider();
             });
         })
@@ -127,7 +129,7 @@ function formInit(iForm) {
         slider.setAttribute("min", mirrorText.getAttribute("min"));
         slider.setAttribute("max", mirrorText.getAttribute("max"));
         slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
-        slider.setAttribute("value", Number(mirrorText.getAttribute("value")));
+        slider.setAttribute("value", mirrorText.getAttribute("value"));
         })
 
 } // end of formInit here //
@@ -176,7 +178,7 @@ function updateNum_Slider() {
   try {
     document.getElementById(document.activeElement.getAttribute("mirr")).value = document.activeElement.value;
   } catch (e) {
-    console.log("#7 error="+e+" Active Elmnt="+document.activeElement.id)
+    console.log("#7 error="+e+" Active Element="+document.activeElement.id)
   }
   document.getElementById("outer").querySelectorAll("input")
       .forEach(function (element) {
@@ -184,10 +186,10 @@ function updateNum_Slider() {
       })
 }
 
-function show_tip(etip) { /*. Use an html.element.id parameter*/
+function show_tip(etip) { /*. Use an html.element parameter*/
   if (!etip.hasOwnProperty('nextSibling')) {
     etip.insertAdjacentHTML('afterend', '<p id="e_Tip"></p>');
-    e_Tip.addEventListener("dblclick", function () {hide_tip(etip)});
+    e_Tip.addEventListener('dblclick', function () {hide_tip(etip)});
     e_Tip.innerHTML=tPHelp(etip);
   }
 }
@@ -231,7 +233,7 @@ function helper(helpE) {
   // Get the modal and display it
   let modal = document.getElementById("myModal");
   modal.style.display = "block";
-  modal.style.opacity = 1.0;
+  modal.style.opacity = "1.0";
   modal.onclick = function() {
     clearInterval(fader);
     clearTimeout(htimer);
@@ -244,14 +246,14 @@ function helper(helpE) {
 function fadeOut(fElem, hID) {
   fader = setInterval(function () {
     if (!fElem.style.opacity) {
-        fElem.style.opacity = 1;
+        fElem.style.opacity = "1.0";
     }
     if (fElem.style.opacity > 0) {
-        fElem.style.opacity -= 0.1;
+        fElem.style.opacity -= "0.1";
     } else {
         clearInterval(fader);
         fElem.style.display = "none";
-        fElem.style.opacity = 1;
+        fElem.style.opacity = "1";
         hID.style.borderColor = "";
     }
   }, 50);
@@ -314,8 +316,8 @@ function clearForm(oForm) {
 
     body {
       position: relative;
-      margin: 1vw;
-      padding: 1vw;
+      margin: 0.5vw;
+      padding: 0.5vw;
       background-color: green;
     }
 
@@ -327,9 +329,9 @@ function clearForm(oForm) {
       color: lightgreen;
     }
 
-    h1, p, form, tspan {
+    h1, p, form {
       display: block;
-      margin: 1vw;
+      margin: 0.7vw;
       text-align: center;
       horiz-align: center;
       border-radius: 1em;
@@ -362,12 +364,6 @@ function clearForm(oForm) {
     }
     .btnRow {
       justify-content: space-around;
-    }
-
-    td {
-      border-color: red;
-      border-width: 0.2em;
-      border-radius: 1em;
     }
 
     input, .input_txt {
@@ -524,10 +520,10 @@ function clearForm(oForm) {
     <span> </span>
     <div id="main_title">
         <h1>תכנית אינסולין להיום </h1>
-        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
     </div>
 
     <div id="ins_form">
+        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
         <span> </span>
         <form action=http://localhost:5000/form method="post" name="igForm" id="igForm">
         <div id="calc">
