@@ -66,46 +66,46 @@ function formInit(iForm) {
   })
   // Defining input elements filters
   iForm.querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (tElem) {
-    tElem.setAttribute("type","tel");
-    if (tElem.classList.contains("inIns")) {
-      tElem.setAttribute("min",minInsulin);
-      tElem.setAttribute("max",maxInsulin);
-      setFilterInput(tElem,
-              function (value) {
-                return /(^$)|(^[0-9]{1,2}$)/.test(value);
-              })
-    } else {
-      setFilterInput(tElem,
-              function (value) {
-                return /^$|^[0-9]{1,3}$/.test(value)
-              })
-      if (tElem.classList.contains("inGlu")) {
-         tElem.setAttribute("min",minGlucose);
-         tElem.setAttribute("max",maxGlucose);
-      }
-    }
+        tElem.setAttribute("type","tel");
+        if (tElem.classList.contains("inIns")) {
+              tElem.setAttribute("min",minInsulin);
+              tElem.setAttribute("max",maxInsulin);
+              setFilterInput(tElem,
+                  function (value) {
+                    return /(^$)|(^[0-9]{1,2}$)/.test(value);
+                  })
+        } else {
+          setFilterInput(tElem,
+                  function (value) {
+                    return /^$|^[0-9]{1,3}$/.test(value)
+                  })
+          if (tElem.classList.contains("inGlu")) {
+             tElem.setAttribute("min",minGlucose);
+             tElem.setAttribute("max",maxGlucose);
+          }
+        }
   })
 
   // Restricts input for the given textbox to the given inputFilter function.
   function setFilterInput(textbox, inputFilter) {
-    ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]//, "change"
+    ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]
     .forEach(function (event) {
       textbox.addEventListener(event, function () {
         if (inputFilter(this.value)) {
-          if (this.value !== "") {
-            this.value = Number(this.value);
-          }
-          this.oldValue = this.value;
-          try {
-            this.oldSelectionStart = this.selectionStart;
-            this.oldSelectionEnd = this.selectionEnd;
-          } catch (e) {
-          }
+              if (this.value !== "") {
+                this.value = Number(this.value);
+              }
+              this.oldValue = this.value;
+              try {
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+              } catch (e) {
+              }
         } else if (this.hasOwnProperty("oldValue")) {
-          this.value = this.oldValue;
-          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+              this.value = this.oldValue;
+              this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
         } else {
-          this.value = "";
+              this.value = "";
         }
       })
     })
@@ -116,15 +116,19 @@ function formInit(iForm) {
   });
 
   this.document.querySelectorAll("[type='range'").forEach(function (slider) {
-    window.addEventListener("input", function () {
-      updateNum_Slider();
-      });
-    let mirrorText=document.getElementById(slider.getAttribute("mirr"));
-    slider.setAttribute("min", mirrorText.getAttribute("min"));
-    slider.setAttribute("max", mirrorText.getAttribute("max"));
-    slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
-    slider.setAttribute("value", Number(mirrorText.getAttribute("value")));
-  })
+        ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]//, "change"
+        .forEach(function (event) {
+            window.addEventListener(event, function () {
+                console.log("event="+event); // TODO: remove code
+                updateNum_Slider();
+            });
+        })
+        let mirrorText=document.getElementById(slider.getAttribute("mirr"));
+        slider.setAttribute("min", mirrorText.getAttribute("min"));
+        slider.setAttribute("max", mirrorText.getAttribute("max"));
+        slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
+        slider.setAttribute("value", Number(mirrorText.getAttribute("value")));
+        })
 
 } // end of formInit here //
  //----------------------//
@@ -532,7 +536,7 @@ function clearForm(oForm) {
             <span> </span>
             <div class="tRow txtRow" id="RG0">
               <label for="glucose0" class="input_txt" id="Glucose_measured_today_morning"></label>
-              <input class="inGlu" name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
+              <input class="inGlu" autofocus name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
             </div>
             <div class="tRow rRow" id="DG0">
               <input name="SG0" id="SG0" type="range" mirr="glucose0" list="tick_marks">
