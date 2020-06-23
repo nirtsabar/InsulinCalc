@@ -66,6 +66,7 @@ function formInit(iForm) {
   })
   // Defining input elements filters
   iForm.querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']").forEach(function (tElem) {
+    tElem.setAttribute("type","tel");
     if (tElem.classList.contains("inIns")) {
       tElem.setAttribute("min",minInsulin);
       tElem.setAttribute("max",maxInsulin);
