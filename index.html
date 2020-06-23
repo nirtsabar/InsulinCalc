@@ -88,7 +88,7 @@ function formInit(iForm) {
 
   // Restricts input for the given textbox to the given inputFilter function.
   function setFilterInput(textbox, inputFilter) {
-    ["onmouseleave", "change", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]
+    ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]//, "change"
     .forEach(function (event) {
       textbox.addEventListener(event, function () {
         if (inputFilter(this.value)) {
