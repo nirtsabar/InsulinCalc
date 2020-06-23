@@ -116,7 +116,7 @@ function formInit(iForm) {
   });
 
   this.document.querySelectorAll("[type='range'").forEach(function (slider) {
-        ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]//, "change"
+        ["mousedown"]//, "change", "onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", , "mouseup", "drop", "touchstart", "drag"
         .forEach(function (event) {
             window.addEventListener(event, function () {
                 console.log("event="+event); // TODO: remove code
