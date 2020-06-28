@@ -10,11 +10,14 @@ const minGlucose = 10;
 const maxGlucose = 500;
 const minInsulin = 0;
 const maxInsulin = 50;
+let focusabl; //Array for all potential elements to include in "Enter" key toggling
+let lastIndex = -1; //global for last 'tab' / 'Enter' focus
+let visFocussable;
 
   /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
 let Dict = [
   "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
-  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר  TSABAR.NIR@GMAIL.COM",
+  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר {1}  TSABAR.NIR@GMAIL.COM",
   "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","סוכר שנמדד <i><b>היום</b></i> הבוקר בצום",
   "Insulin_given_yesterday_morning","אינסולין שניתן <i><b>אתמול</b></i> בבוקר","כמה יחידות אינסולין הוזרקו אתמול בבוקר?",
   "Glucose_measured_yesterday_noon","סוכר שנמדד <i><b>אתמול</b></i> בצהרים","סוכר שנמדד בצהרים אתמול",
@@ -48,6 +51,7 @@ function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element para
 
 function formInit(iForm) {
   /* Initialization of form parameters*/
+  iForm.glucose0.autofocus=true;
   iForm.glucose0.value = "";
   iForm.glucose1.value = "";
   iForm.glucose2.value = "";
@@ -60,7 +64,7 @@ function formInit(iForm) {
   /* Initialization of form texts*/
   document.getElementById("outer").querySelectorAll(".input_txt, .has_tip").
     forEach(function (tElem) {
-        console.log("tElem="+tElem.id);//todo: remove code
+        //console.log("tElem="+tElem.id);//todo: remove code
         tP(tElem); // <= Placing the correct texts
         if (tElem.nodeName !== "INPUT") {
           tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
@@ -90,25 +94,26 @@ function formInit(iForm) {
 
   // Restricts input for the given textbox to the given inputFilter function.
   function setFilterInput(textbox, inputFilter) {
-    ["onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]
+    ["change", "input", "keydown", "select", "contextmenu", "paste", "animationstart", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"]//"onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"
     .forEach(function (event) {
-      textbox.addEventListener(event, function () {
-        if (inputFilter(this.value)) {
-              if (this.value !== "") {
-                this.value = Number(this.value);
-              }
-              this.oldValue = this.value;
-              try {
-                this.oldSelectionStart = this.selectionStart;
-                this.oldSelectionEnd = this.selectionEnd;
-              } catch (e) {
-              }
-        } else if (this.hasOwnProperty("oldValue")) {
-              this.value = this.oldValue;
-              this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-        } else {
-              this.value = "";
-        }
+          textbox.addEventListener(event, function () {
+                if (inputFilter(this.value)) {
+                      if (this.value !== "") {
+                        this.value = Number(this.value);
+                      }
+                      this.oldValue = this.value;
+                      try {
+                        this.oldSelectionStart = this.selectionStart;
+                        this.oldSelectionEnd = this.selectionEnd;
+                      } catch (e) {
+                      }
+                } else if (this.hasOwnProperty("oldValue")) {
+                      this.value = this.oldValue;
+                      this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                      this.value = "";
+                }
+          updateNum_Slider(); //todo: check if code is good here
       })
     })
   }
@@ -118,21 +123,32 @@ function formInit(iForm) {
   });
 
   this.document.querySelectorAll("[type='range']").forEach(function (slider) {
-        ["input"]//["mousedown"]//, , "onmouseleave", "select", "contextmenu", "paste", "animationstart", "input", "keydown", "onkeydown", "onkeyup", , "mouseup", "drop", "touchstart", "drag"
-        .forEach(function (event) {
-            window.addEventListener(event, function () {
-               // console.log("event="+event); // TODO: remove code
-                updateNum_Slider();
-            });
-        })
-        let mirrorText=document.getElementById(slider.getAttribute("mirr"));
-        slider.setAttribute("min", mirrorText.getAttribute("min"));
-        slider.setAttribute("max", mirrorText.getAttribute("max"));
-        slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
-        slider.setAttribute("value", mirrorText.getAttribute("value"));
-        })
+      let mirrorText = document.getElementById(slider.getAttribute("mirr"));
+      slider.setAttribute("min", mirrorText.getAttribute("min"));
+      slider.setAttribute("max", mirrorText.getAttribute("max"));
+      slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
+      slider.setAttribute("value", mirrorText.getAttribute("value"));
 
-} // end of formInit here //
+      //"onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"//["mousedown"], "input", "keydown", "onkeydown", "onkeyup", "mouseup", "drop", "touchstart", "drag", "onmouseleave", "select", "contextmenu", "paste", "animationstart"
+
+      ["touchstart", "touchmove", "input"].forEach(function (event) {
+          slider.addEventListener(event, function () {
+              slider.focus();
+              updateNum_Slider()
+          })
+      })
+  })
+
+  //all potential elements to include in "Enter" key toggling
+  focusabl = Array.from(
+          document.querySelectorAll(
+                  'button:not([disabled]), ' +
+                  'input[type=text]:not([disabled]), ' +
+                  'input[tabindex]:not([disabled]):not([tabindex="-1"])'
+          )
+  );
+
+  } // end of formInit here //
  //----------------------//
 
 
@@ -143,23 +159,15 @@ function checkIfEnter (elem, the_Key) {
     }
 }
 
-let lastIndex = -1; //global for last 'tab' / 'Enter' focus
-let visFocussable;
 
 function GoNext() {
 //add all elements we want to include in our selection
-  let focusabl = Array.from(
-          document.querySelectorAll(
-                  'button:not([disabled]), ' +
-                  'input[type=text]:not([disabled]), ' +
-                  'input[tabindex]:not([disabled]):not([tabindex="-1"])'
-          )
-  );
   if (document.activeElement) {
     visFocussable = Array.prototype.filter.call(focusabl, function (element) {
                //check for visibility while always include the current activeElement
                return element.offsetWidth > 0 && element.offsetHeight > 0 || element === document.activeElement
              });
+    console.log("visFocussable="+ visFocussable);//<todo
     let index = visFocussable.indexOf(document.activeElement);
     if (index === -1) {
       index = lastIndex
@@ -175,13 +183,18 @@ function GoNext() {
 
 // Set range value according to number, or vice versa; refreshes input elements
 function updateNum_Slider() {
-  try {
-    document.getElementById(document.activeElement.getAttribute("mirr")).value = document.activeElement.value;
-  } catch (e) {
-    console.log("#7 error="+e+" Active Element="+document.activeElement.id)
-  }
-  document.getElementById("outer").querySelectorAll("input")
-      .forEach(function (element) {
+    let actElem;
+    try {
+        actElem = document.getElementById(document.activeElement.getAttribute("mirr"));
+    } catch (e) {
+        console.log("#7 error="+e+" Active Element="+document.activeElement.id+" lastIndex="+lastIndex);
+        actElem = visFocussable[Math.max(lastIndex,0)];
+    }
+    if (document.activeElement.value) {actElem.value = document.activeElement.value}
+    else {console.log("actElem.id="+actElem.id);actElem.value = actElem.min;}
+
+    document.getElementById("outer").querySelectorAll("input")
+        .forEach(function (element) {
             element.value = element.value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
       })
 }
@@ -303,7 +316,7 @@ function clearForm(oForm) {
 //  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
 -->
 
-  <style>
+  <style data="test">
 
     html {
       margin: 0;
@@ -362,9 +375,6 @@ function clearForm(oForm) {
       display: flex;
       justify-content: space-between;
     }
-    .btnRow {
-      justify-content: space-around;
-    }
 
     input, .input_txt {
       background-color: darkgreen;
@@ -391,21 +401,45 @@ function clearForm(oForm) {
       -webkit-appearance: none;
       border-color: green;
       width: 90%;
-      height: 1em;
+      height: 0.95em;
       background: darkgreen;
       outline: none;
       cursor: pointer;
-      box-shadow: 1px 1px 1px lightgreen, 0px 0px 1px #0d0d0d;
+      box-shadow: 1px 1px 1px lightgreen;
+
     }
 
     [type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 2em;
-    height: 2em;
+    height: 1.8em;
     background: lightgreen;
     border-radius: 1em;
+    box-shadow: -5em 0 0 5em lightgreen;
     cursor: pointer;
+    }
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        input[type='range'] {
+            overflow: hidden;
+            -webkit-appearance: none;
+            background-color: green;
+        }
+
+        input[type='range']::-webkit-slider-runnable-track {
+            -webkit-appearance: none;
+            color: green;
+            margin-top: -1px;
+            border-radius: 0.9em;
+            height: 1.8em;
+            box-shadow: 1px 1px 1px lightgreen, 0px 0px 1px #0d0d0d;
+        }
+
+        input[type='range']::-webkit-slider-thumb {
+            background: lightgreen;
+            box-shadow: -81em 0 0 80em darkgreen;
+        }
     }
 
     .btnHlp {
@@ -528,13 +562,13 @@ function clearForm(oForm) {
         <form action=http://localhost:5000/form method="post" name="igForm" id="igForm">
         <div id="calc">
 
-          <div class="cItem" id="itemG0">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RG0">
+            <div class="tRow" id="RG0">
               <label for="glucose0" class="input_txt" id="Glucose_measured_today_morning"></label>
-              <input class="inGlu" autofocus name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
+              <input class="inGlu" name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
             </div>
-            <div class="tRow rRow" id="DG0">
+            <div class="tRow" id="DG0">
               <input name="SG0" id="SG0" type="range" mirr="glucose0" list="tick_marks">
               <datalist id="tick_marks">
 <!--                <option value="0"></option>-->
@@ -552,103 +586,103 @@ function clearForm(oForm) {
             </div>
           </div>
 
-          <div class="cItem" id="itemI0">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RI0">
+            <div class="tRow" id="RI0">
               <label for="insulin0" class="input_txt" id="Insulin_given_yesterday_morning"></label>
               <input class="inIns" name="insulin0" id="insulin0" mirr="SI0" tabindex="2">
             </div>
-            <div class="tRow rRow">
+            <div class="tRow">
               <input id="SI0" type="range" mirr="insulin0">
             </div>
           </div>
 
-          <div class="cItem" id="itemG1">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RG1">
+            <div class="tRow" id="RG1">
               <label for="glucose1" class="input_txt" id="Glucose_measured_yesterday_noon"></label>
               <input class="inGlu" name="glucose1" id="glucose1" mirr="SG1" tabindex="3">
             </div>
-            <div class="tRow rRow">
+            <div class="tRow">
               <input name="SG1" id="SG1" type="range" mirr="glucose1">
             </div>
           </div>
 
-          <div class="cItem" id="itemI1">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RI1">
+            <div class="tRow" id="RI1">
               <label for="insulin1" class="input_txt" id="Insulin_given_yesterday_noon"></label>
               <input class="inIns" name="insulin1" id="insulin1" mirr="SI1" tabindex="4">
             </div>
-            <div class="tRow rRow">
+            <div class="tRow">
               <input name="SI1" id="SI1" type="range" mirr="insulin1">
             </div>
           </div>
 
-          <div class="cItem" id="itemG2">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RG2">
+            <div class="tRow" id="RG2">
               <label for="glucose2" class="input_txt" id="Glucose_measured_yesterday_evening"></label>
               <input class="inGlu" name="glucose2" id="glucose2" mirr="SG2" tabindex="5">
             </div>
-            <div class="tRow rRow">
+            <div class="tRow">
               <input name="SG2" id="SG2" type="range" mirr="glucose2">
             </div>
           </div>
 
-          <div class="cItem" id="itemI2">
+          <div class="cItem">
             <span> </span>
-            <div class="tRow txtRow" id="RI2">
+            <div class="tRow" id="RI2">
               <label for="insulin2" class="input_txt" id="Insulin_given_yesterday_evening"></label>
               <input class="inIns" name="insulin2" id="insulin2" mirr="SI2" tabindex="6">
             </div>
-            <div class="tRow rRow">
+            <div class="tRow">
               <input name="SI2" id="SI2" type="range" mirr="insulin2">
             </div>
           </div>
 
-          <div class="cItem mdItem" id="itemOpG">
+          <div class="cItem mdItem">
             <span> </span>
-            <div class="tRow txtRow" id="ROpG">
+            <div class="tRow" id="ROpG">
               <label for="optimalGlucose" class="input_txt" id="Optimal_glucose"></label>
               <input type="tel" name="optimalGlucose" id="optimalGlucose">
             </div>
             <span> </span>
-            <div class="tRow txtRow" id="RGIR">
+            <div class="tRow" id="RGIR">
               <label for="glucose_Insulin_Factor" class="input_txt" id="GIR"></label>
               <input type="tel" name="glucose_Insulin_Factor" id="glucose_Insulin_Factor">
             </div>
           </div>
 
-          <div class="tRow btnRow" id="itemBC">
+          <div class="tRow">
             <label for="CalcBtn" class="input_txt btnHlp" id="CalcBtnH"></label>
             <input type="button" class="input_txt" name="CalcBtn" id="CalcBtn" onClick="update(this.form)" tabindex="7">
           </div>
 
-          <div class="cItem outItem" id="itemOutput">
+          <div class="cItem outItem">
             <span> </span>
-            <div class="tRow txtRow" id="RrI0">
+            <div class="tRow" id="RrI0">
               <label for="rInsulin0" class="input_txt" id=rI0t></label>
               <input readonly name="rInsulin0" id="rInsulin0">
             </div>
             <span> </span>
-            <div class="tRow txtRow" id="RrI1">
+            <div class="tRow" id="RrI1">
               <label for="rInsulin1" class="input_txt" id=rI1t></label>
               <input readonly name="rInsulin1" id="rInsulin1">
             </div>
             <span> </span>
-            <div class="tRow txtRow" id="RrI2">
+            <div class="tRow" id="RrI2">
               <label for="rInsulin2" class="input_txt" id=rI2t></label>
               <input readonly name="rInsulin2" id="rInsulin2">
             </div>
           </div>
 
 
-          <div>
+          <div class="tRow">
             <label for="ZeroBtn" class="input_txt btnHlp" id="ZeroBtnH"></label>
             <input type="button" name="ZeroBtn" id="ZeroBtn" class="input_txt pinkOver" onClick="clearForm(this.form)">
           </div>
-          <div>
+          <div class="tRow">
             <label for="SubmitBtn" class="input_txt btnHlp" id="SubmitBtnH"></label>
             <input type="submit" name="SubmitBtn" id="SubmitBtn" class="input_txt">
           </div>
