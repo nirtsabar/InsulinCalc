@@ -17,7 +17,7 @@ let visFocussable;
   /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
 let Dict = [
   "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
-  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר {1}  TSABAR.NIR@GMAIL.COM",
+  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר {2}  TSABAR.NIR@GMAIL.COM",
   "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","סוכר שנמדד <i><b>היום</b></i> הבוקר בצום",
   "Insulin_given_yesterday_morning","אינסולין שניתן <i><b>אתמול</b></i> בבוקר","כמה יחידות אינסולין הוזרקו אתמול בבוקר?",
   "Glucose_measured_yesterday_noon","סוכר שנמדד <i><b>אתמול</b></i> בצהרים","סוכר שנמדד בצהרים אתמול",
@@ -25,7 +25,7 @@ let Dict = [
   "Glucose_measured_yesterday_evening","סוכר שנמדד <i><b>אתמול</b></i> בערב","סוכר שנמדד בערב אתמול",
   "Insulin_given_yesterday_evening","אינסולין שניתן <i><b>אתמול</b></i> בערב","כמה אינסולין הוזרק בערב אתמול ?",
   "Optimal_glucose","רמת סוכר אופטימלית","את רמת הסוכר האופטימלית יש להתאים לרמת הסיכון לנפילות סוכר, לגיל ולמצב התפקודי",
-  "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה יביא לתיקון עדין יותר",
+  "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה כאן יביא לתיקון אינסולין מתון יותר",
   "gItiptxt","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי","רמת הסוכר האופטימלית בטיפול תרופתי גבוהה יותר ככל שהגיל עולה או המצב התפקודי יורד. בסוכרת מסוג 2 עדיף להפחית סוכר באמצעות תזונה נכונה מאשר באמצעות תרופות",
   "rI0t","אינסולין מחושב להבוקר","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
   "rI1t","אינסולין מחושב לצהרים","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
@@ -271,8 +271,7 @@ function fadeOut(fElem, hID) {
 }
 
 function insulinDelta(glucose, igForm) {
-  let delta = 0;
-  delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
+  let delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
   if (glucose === "") {delta = "?"}
   return delta;
 }
@@ -314,7 +313,7 @@ function clearForm(oForm) {
 //  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
 -->
 
-  <style data="test">
+  <style>
 
     html {
       margin: 0;
@@ -347,9 +346,6 @@ function clearForm(oForm) {
       horiz-align: center;
       border-radius: 1em;
       background-color: darkgreen;
-      /*-moz-background-clip:    padding;*/
-      /*background-clip:         padding-box;*/
-      /*-webkit-background-clip: padding-box;*/
     }
 
     div {
@@ -431,7 +427,7 @@ function clearForm(oForm) {
             margin-top: -1px;
             border-radius: 0.9em;
             height: 1.8em;
-            box-shadow: 1px 1px 1px lightgreen, 0px 0px 1px #0d0d0d;
+            box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;
         }
 
         input[type='range']::-webkit-slider-thumb {
@@ -463,23 +459,8 @@ function clearForm(oForm) {
       position: relative;
       display: block;
     }
-    .has_tip:hover .tip {
+    .has_tip:hover {
         visibility: visible;
-    }
-    .tip {
-      visibility: hidden;
-      display: block;
-      top: 1.2em;
-      position: relative;
-      width: 50vw;
-      Right: 0;
-      background-color: #004d00;
-      color: #DDFFDD;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0 1em;
-      border-color: black;/***/
-      border-width: 1px;
     }
 
     /* The Modal (background) */
