@@ -17,7 +17,7 @@ let visFocussable;
   /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
 let Dict = [
   "Insulin_Glucose_Header","אינסולין היום לפי אתמול","",
-  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר {1}  TSABAR.NIR@GMAIL.COM",
+  "disclaimer","מחשבון - לא תחליף ליעוץ רפואי","לפרטים: דר ניר צבר {2}  TSABAR.NIR@GMAIL.COM",
   "Glucose_measured_today_morning","סוכר שנמדד <i><b>היום</b></i> בבוקר","סוכר שנמדד <i><b>היום</b></i> הבוקר בצום",
   "Insulin_given_yesterday_morning","אינסולין שניתן <i><b>אתמול</b></i> בבוקר","כמה יחידות אינסולין הוזרקו אתמול בבוקר?",
   "Glucose_measured_yesterday_noon","סוכר שנמדד <i><b>אתמול</b></i> בצהרים","סוכר שנמדד בצהרים אתמול",
@@ -25,7 +25,7 @@ let Dict = [
   "Glucose_measured_yesterday_evening","סוכר שנמדד <i><b>אתמול</b></i> בערב","סוכר שנמדד בערב אתמול",
   "Insulin_given_yesterday_evening","אינסולין שניתן <i><b>אתמול</b></i> בערב","כמה אינסולין הוזרק בערב אתמול ?",
   "Optimal_glucose","רמת סוכר אופטימלית","את רמת הסוכר האופטימלית יש להתאים לרמת הסיכון לנפילות סוכר, לגיל ולמצב התפקודי",
-  "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה יביא לתיקון עדין יותר",
+  "GIR","תיקון סוכר ליחידת אינסולין","מספר גבוה כאן יביא לתיקון אינסולין מתון יותר",
   "gItiptxt","את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי","רמת הסוכר האופטימלית בטיפול תרופתי גבוהה יותר ככל שהגיל עולה או המצב התפקודי יורד. בסוכרת מסוג 2 עדיף להפחית סוכר באמצעות תזונה נכונה מאשר באמצעות תרופות",
   "rI0t","אינסולין מחושב להבוקר","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
   "rI1t","אינסולין מחושב לצהרים","החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
@@ -64,7 +64,6 @@ function formInit(iForm) {
   /* Initialization of form texts*/
   document.getElementById("outer").querySelectorAll(".input_txt, .has_tip").
     forEach(function (tElem) {
-        //console.log("tElem="+tElem.id);//todo: remove code
         tP(tElem); // <= Placing the correct texts
         if (tElem.nodeName !== "INPUT") {
           tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
@@ -113,8 +112,8 @@ function formInit(iForm) {
                 } else {
                       this.value = "";
                 }
-          updateNum_Slider(); //todo: check if code is good here
-      })
+                updateNum_Slider();
+          }, { passive: false })
     })
   }
 
@@ -129,13 +128,11 @@ function formInit(iForm) {
       slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
       slider.setAttribute("value", mirrorText.getAttribute("value"));
 
-      //"onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"//["mousedown"], "input", "keydown", "onkeydown", "onkeyup", "mouseup", "drop", "touchstart", "drag", "onmouseleave", "select", "contextmenu", "paste", "animationstart"
-
       ["touchstart", "touchmove", "input"].forEach(function (event) {
           slider.addEventListener(event, function () {
               slider.focus();
               updateNum_Slider()
-          })
+          }, { passive: false })
       })
   })
 
@@ -167,7 +164,6 @@ function GoNext() {
                //check for visibility while always include the current activeElement
                return element.offsetWidth > 0 && element.offsetHeight > 0 || element === document.activeElement
              });
-    console.log("visFocussable="+ visFocussable);//<todo
     let index = visFocussable.indexOf(document.activeElement);
     if (index === -1) {
       index = lastIndex
@@ -200,14 +196,15 @@ function updateNum_Slider() {
 }
 
 function show_tip(etip) { /*. Use an html.element parameter*/
-  if (!etip.hasOwnProperty('nextSibling')) {
+  if (!etip.nextElementSibling) {
     etip.insertAdjacentHTML('afterend', '<p id="e_Tip"></p>');
-    e_Tip.addEventListener('dblclick', function () {hide_tip(etip)});
-    e_Tip.innerHTML=tPHelp(etip);
+    let sTip=document.getElementById("e_Tip");
+    sTip.innerHTML=tPHelp(etip);
+    sTip.addEventListener('dblclick', function () {hide_tip()});
   }
 }
 
-function hide_tip(etip) {
+function hide_tip() {
   setTimeout(function() {
     let hTip=document.getElementById("e_Tip");
     if (hTip!==null) {
@@ -221,7 +218,6 @@ function hide_tip(etip) {
         if (i < 0) {
           clearInterval(t);
           hTip.style.height = fsN + "px";
-          etip.removeEventListener("dblclick", hide_tip(etip));
           hTip.remove();
         } else {
           i--;
@@ -273,8 +269,7 @@ function fadeOut(fElem, hID) {
 }
 
 function insulinDelta(glucose, igForm) {
-  let delta = 0;
-  delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
+  let delta = (glucose - igForm.optimalGlucose.value) / (igForm.glucose_Insulin_Factor.value);
   if (glucose === "") {delta = "?"}
   return delta;
 }
@@ -316,7 +311,7 @@ function clearForm(oForm) {
 //  <link rel="stylesheet" href="https://github.com/nirtsabar/InsulinCalc/blob/master/styleD.css">
 -->
 
-  <style data="test">
+  <style>
 
     html {
       margin: 0;
@@ -349,9 +344,6 @@ function clearForm(oForm) {
       horiz-align: center;
       border-radius: 1em;
       background-color: darkgreen;
-      /*-moz-background-clip:    padding;*/
-      /*background-clip:         padding-box;*/
-      /*-webkit-background-clip: padding-box;*/
     }
 
     div {
@@ -433,7 +425,7 @@ function clearForm(oForm) {
             margin-top: -1px;
             border-radius: 0.9em;
             height: 1.8em;
-            box-shadow: 1px 1px 1px lightgreen, 0px 0px 1px #0d0d0d;
+            box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;
         }
 
         input[type='range']::-webkit-slider-thumb {
@@ -465,23 +457,8 @@ function clearForm(oForm) {
       position: relative;
       display: block;
     }
-    .has_tip:hover .tip {
+    .has_tip:hover {
         visibility: visible;
-    }
-    .tip {
-      visibility: hidden;
-      display: block;
-      top: 1.2em;
-      position: relative;
-      width: 50vw;
-      Right: 0;
-      background-color: #004d00;
-      color: #DDFFDD;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0 1em;
-      border-color: black;/***/
-      border-width: 1px;
     }
 
     /* The Modal (background) */
@@ -557,9 +534,11 @@ function clearForm(oForm) {
     </div>
 
     <div id="ins_form">
-        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
+        <div onmouseleave="hide_tip()">
+            <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
+        </div>
         <span> </span>
-        <form action=http://localhost:5000/form method="post" name="igForm" id="igForm">
+        <form action=http://localhost:80/form method="post" name="igForm" id="igForm">
         <div id="calc">
 
           <div class="cItem">
