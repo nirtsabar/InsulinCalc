@@ -39,19 +39,19 @@ let Dict = [
   ];
 
 function tP (tID) { /* Hebrew text placement. Use an html.element parameter*/
-  let ttext=Dict[Dict.findIndex(x=>x===tID.id)+1];
+  let ttext=Dict[Dict.findIndex(function (x) {return x===tID.id})+1];
   tID.innerHTML = ttext;
   if (tID.type="button") { //with single '=' is true also for "submit"
     tID.setAttribute("value", ttext);
   }
 }
 function tPHelp (thID) { /* Hebrew Help Tips placement. Use an html.element parameter*/
-  return Dict[Dict.findIndex(x=>x===thID.id)+2];
+  return Dict[Dict.findIndex(function (x) {return x===thID.id})+2];
 }
 
 function formInit(iForm) {
   /* Initialization of form parameters*/
-  iForm.glucose0.autofocus=true;
+  iForm.glucose0.autofocus="true";
   iForm.glucose0.value = "";
   iForm.glucose1.value = "";
   iForm.glucose2.value = "";
@@ -112,8 +112,8 @@ function formInit(iForm) {
                 } else {
                       this.value = "";
                 }
-          updateNum_Slider();
-      })
+                updateNum_Slider();
+          }, { passive: false })
     })
   }
 
@@ -128,13 +128,11 @@ function formInit(iForm) {
       slider.setAttribute("defaultValue", mirrorText.getAttribute("min"));
       slider.setAttribute("value", mirrorText.getAttribute("value"));
 
-      //"onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "input", "keydown", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"//["mousedown"], "input", "keydown", "onkeydown", "onkeyup", "mouseup", "drop", "touchstart", "drag", "onmouseleave", "select", "contextmenu", "paste", "animationstart"
-
       ["touchstart", "touchmove", "input"].forEach(function (event) {
           slider.addEventListener(event, function () {
               slider.focus();
               updateNum_Slider()
-          })
+          }, { passive: false })
       })
   })
 
@@ -198,14 +196,15 @@ function updateNum_Slider() {
 }
 
 function show_tip(etip) { /*. Use an html.element parameter*/
-  if (!etip.hasOwnProperty('nextSibling')) {
+  if (!etip.nextElementSibling) {
     etip.insertAdjacentHTML('afterend', '<p id="e_Tip"></p>');
-    e_Tip.addEventListener('dblclick', function () {hide_tip(etip)});
-    e_Tip.innerHTML=tPHelp(etip);
+    let sTip=document.getElementById("e_Tip");
+    sTip.innerHTML=tPHelp(etip);
+    sTip.addEventListener('dblclick', function () {hide_tip()});
   }
 }
 
-function hide_tip(etip) {
+function hide_tip() {
   setTimeout(function() {
     let hTip=document.getElementById("e_Tip");
     if (hTip!==null) {
@@ -219,7 +218,6 @@ function hide_tip(etip) {
         if (i < 0) {
           clearInterval(t);
           hTip.style.height = fsN + "px";
-          etip.removeEventListener("dblclick", hide_tip(etip));
           hTip.remove();
         } else {
           i--;
@@ -536,9 +534,11 @@ function clearForm(oForm) {
     </div>
 
     <div id="ins_form">
-        <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
+        <div onmouseleave="hide_tip()">
+            <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
+        </div>
         <span> </span>
-        <form action=http://localhost:5000/form method="post" name="igForm" id="igForm">
+        <form action=http://localhost:80/form method="post" name="igForm" id="igForm">
         <div id="calc">
 
           <div class="cItem">
