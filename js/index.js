@@ -173,5 +173,3 @@ function check_data(t_form) {
 function clearForm(oForm) {
   oForm.reset();
 }
-
-</script>
