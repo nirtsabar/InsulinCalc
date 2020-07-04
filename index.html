@@ -1,4 +1,5 @@
 <!doctype html>
+<!--suppress HtmlUnknownAttribute, HtmlFormInputWithoutLabel -->
 <html class="no-js" lang="he">
 <head>
     <title id="Insulin_Glucose_Header">אינסולין לפי רמת סוכר בדם</title>
@@ -7,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="img/logo.gif"/>
     <link rel="stylesheet" href="index.css">
-    <script type="text/javascript" src="index.js"></script>
+    <script src="index.js" type="text/javascript"></script>
 </head>
 
 <body onload="formInit(igForm)">
@@ -35,9 +36,11 @@
                     <span> </span>
                     <div class="tRow" id="RG0">
                         <label for="glucose0" class="input_txt" id="Glucose_measured_today_morning"></label>
+                        <!--suppress HtmlUnknownAttribute -->
                         <input class="inGlu" name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
                     </div>
                     <div class="tRow" id="DG0">
+                        <!--suppress HtmlFormInputWithoutLabel -->
                         <input name="SG0" id="SG0" type="range" mirr="glucose0" list="tick_marks">
                         <datalist id="tick_marks">
                             <!--                <option value="0"></option>-->
@@ -62,6 +65,7 @@
                         <input class="inIns" name="insulin0" id="insulin0" mirr="SI0" tabindex="2">
                     </div>
                     <div class="tRow">
+                        <!--suppress HtmlFormInputWithoutLabel -->
                         <input id="SI0" type="range" mirr="insulin0">
                     </div>
                 </div>

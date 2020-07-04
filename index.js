@@ -131,7 +131,7 @@ function formInit(iForm) {
         }
     }
     window.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && document.activeElement.type !=="button") {
             event.preventDefault();
             updateNum_Slider();
             GoNext();
