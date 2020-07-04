@@ -407,6 +407,8 @@
         }
 
         function update(this_form) {
+            this_form.rInsulin2.focus();// to ease watching if possible
+            this_form.rInsulin0.focus();// to ensure displaying
             let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value, this_form);
             this_form.rInsulin0.value = correctedInsulin(ri0);
             let ri1 = Number(this_form.insulin1.value) + insulinDelta(this_form.glucose2.value, this_form);
