@@ -1,174 +1,246 @@
-    html {
-      margin: 0;
-      color: white;
-      font-size: 4vw;
-      height:100vh;
-      width:97.5vw;
-      direction: rtl;
-    }
 
-    body {
-      position: relative;
-      margin: 1vw;
-      padding: 1vw;
-      background-color: green;
-    }
+        html {
+            margin: 0;
+            color: white;
+            font-size: 4vw;
+            height: 100vh;
+            width: 97.5vw;
+            direction: rtl;
+        }
 
-    td:hover {
-      text-shadow: 2px 2px 8px #FF0000;
-    }
+        body {
+            position: relative;
+            margin: 0.5vw;
+            padding: 0.5vw;
+            background-color: green;
+        }
 
-    h1 {
-      color: lightgreen;
-    }
+        td:hover {
+            text-shadow: 2px 2px 8px #FF0000;
+        }
 
-    h1, p, form {
-      display: block;
-      margin: 1vw;
-      text-align: center;
-      horiz-align: center;
-      border-radius: 20px;
-      background-color: darkgreen;
-      -moz-background-clip:    padding;
-      background-clip:         padding-box;
-      -webkit-background-clip: padding-box;
-    }
+        h1 {
+            color: lightgreen;
+        }
 
-    table {
-      padding: 2vw;
-    }
+        h1, p, form {
+            display: block;
+            margin: 0.7vw;
+            text-align: center;
+            horiz-align: center;
+            border-radius: 1em;
+            background-color: darkgreen;
+        }
 
-    td {
-      border-color: lightgreen;
-      border-width: 1px;
-      border-radius: 15px;
-    }
+        div {
+            margin: 0.5vw;
+            padding: 0.5vw;
+        }
 
+        table {
+            padding: 0.5vw;
+        }
 
-    input, .input_txt {
-      border-width: 4px;
-      border-radius: 15px;
-      border-style: solid;
-      border-color: green;/*****/
-      background-color: darkgreen;
-      font-family: inherit;
-      font-size: 5vw;
-      color: inherit;
-      text-align: right;
-      padding: 0.5em;
-    }
+        .cItem {
+            border-style: solid;
+            border-color: green;
+            border-width: 0.2em;
+            border-radius: 1em;
+            padding: 0.5em;
+            margin: 0.3em;
+        }
 
-    input {
-      width: 11vw;
-    }
-    .input_txt {
-      width: 67vw;
-    }
-    .btnHlp {
-      display: inline-block;
-      text-align: center;
-      float: left;
-      width: 10%;
-      color: lightgreen;
-    }
+        .tRow {
+            display: flex;
+            justify-content: space-between;
+        }
 
-    [type="button"], [type="submit"] {
-      width: 17vw;
-      text-align: center;
-      background-color: green;
-      padding: 0.3em;
-    }
+        input, .input_txt {
+            background-color: darkgreen;
+            font-family: inherit;
+            font-size: 5vw;
+            color: inherit;
+            text-align: right;
+            padding: 0.5em;
+        }
 
-    .pinkOver:hover {
-      color: pink;
-    }
+        input {
+            border-width: 0.2em;
+            border-radius: 1em;
+            border-style: solid;
+            border-color: green; /*****/
+            width: 11vw;
+        }
 
-    .has_tip {
-      position: relative;
-      display: block;
-    }
-    .has_tip:hover .tip {
-        visibility: visible;
-    }
-    .tip {
-      visibility: hidden;
-      display: block;
-      top: 1.2em;
-      position: relative;
-      width: 50vw;
-      Right: 0;
-      background-color: #004d00;
-      color: #DDFFDD;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0 1em;
-      border-color: black;/***/
-      border-width: 1px;
-    }
-    #gItiptxt {
-      top: 1em;
-    }
+        .input_txt {
+            width: 70vw;
+        }
 
+        [type="range"] {
+            -webkit-appearance: none;
+            border-color: green;
+            width: 90%;
+            height: 1.9em;
+            background: darkgreen;
+            outline: none;
+            cursor: pointer;
+            box-shadow: 1px 1px 1px lightgreen;
+            padding: 0;
+        }
 
-    .eTip {
-      padding: 2em;
-    }
+        [type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 2em;
+            height: 1.8em;
+            background: lightgreen;
+            border-radius: 1em;
+            box-shadow: -5em 0 0 5em lightgreen;
+            cursor: pointer;
+        }
 
+        /*@media screen and (-webkit-min-device-pixel-ratio:0) {*/
+        [type=range] {
+            overflow: hidden;
+            -webkit-appearance: none;
+            background-color: green;
+        }
 
-    /* The Modal (background) */
-    .modal {
-      display: none; /*  = Hidden by default   ****/
-      z-index: 1; /* Sit on top */
-      left: 0;
-      top: 0;
-      width: 70%; /* Full width */
-      height: 100%; /* Full height */
-      padding: 15%;
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgb(0,0,0); /* Fallback color */
-      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-      position: fixed; /* Stay in place */
-      text-align: center;
+        [type=range]::-webkit-slider-runnable-track {
+            -webkit-appearance: none;
+            color: green;
+            margin-top: -1px;
+            border-radius: 0.9em;
+            height: 1.8em;
+            box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;
+        }
 
-    }
+        [type=range]::-webkit-slider-thumb {
+            background: darkgreen;
+            box-shadow: -81em 0 0 80em darkgreen;
+            border: 0.1em solid lightgreen;
+            border-radius: 0.9em;
+        }
 
-    /* Modal Content */
-    .modal_content {
-      top: 0;
-      left: 0;
-      background-color: #dfd;
-      padding: 10%;
-      border: 1px solid #888;
-      border-radius: 25px;
-      width: 60%;
-      /*height: 30%;*/
-      display: inline-block;
-      text-align: center;
-    }
-     /*The Close Button */
-    .close {
-      color: #0F0;
-      background-color: transparent;
-      display: block;
-      width: 1em;
-      right: 0;
-      font-size: 200%;
-      font-weight: bold;
-      text-shadow: 1px 1px #0a0 ;
-    }
-    .close:hover,
-    .close:focus {
-      color: #090;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .help_text {
-      display: block;
-      padding: 5%;
-      margin: 1px;
-    }
+        /*}*/
+        [type=range]::-ms-track {
+            padding: 0;
+            height: 1.9em;
+            background: transparent;
+            border-width: 0;
+            color: transparent;
+        }
 
-    td:hover {
-      text-shadow: 1px 2px black;
-      border-color: lightgreen;
-    }
+        [type=range]::-ms-fill-lower {
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2), 0 0 1px rgba(13, 13, 13, 0.2);
+            background: green;
+        }
+
+        [type=range]::-ms-fill-upper {
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2), 0 0 1px rgba(13, 13, 13, 0.2);
+            background: darkgreen;
+        }
+
+        [type=range]::-ms-thumb {
+            box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2), 0 0 4px rgba(13, 13, 13, 0.2);
+            background: darkgreen;
+            border: 0.1em solid green;
+            border-radius: 0.9em;
+            /*box-sizing: border-box;*/
+            height: 1.7em;
+            width: 1.7em;
+            margin: 0;
+        }
+
+        input[type=range]::-ms-tooltip {
+            display: none;
+        }
+
+        .btnHlp {
+            display: inline-block;
+            text-align: center;
+            float: left;
+            width: 10%;
+            color: lightgreen;
+        }
+
+        [type="button"], [type="submit"] {
+            width: 17vw;
+            text-align: center;
+            background-color: green;
+            padding: 0.3em;
+        }
+
+        .pinkOver:hover {
+            color: pink;
+        }
+
+        .has_tip {
+            position: relative;
+            display: block;
+        }
+
+        .has_tip:hover {
+            visibility: visible;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /*  = Hidden by default   ****/
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 70%; /* Full width */
+            height: 100%; /* Full height */
+            padding: 15%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            position: fixed; /* Stay in place */
+            text-align: center;
+
+        }
+
+        /* Modal Content */
+        .modal_content {
+            top: 0;
+            left: 0;
+            background-color: #dfd;
+            padding: 10%;
+            border: 1px solid #888;
+            border-radius: 25px;
+            width: 60%;
+            /*height: 30%;*/
+            display: inline-block;
+            text-align: center;
+        }
+
+        /*The Close Button */
+        .close {
+            color: #0F0;
+            background-color: transparent;
+            display: block;
+            width: 1em;
+            right: 0;
+            font-size: 200%;
+            font-weight: bold;
+            text-shadow: 1px 1px #0a0;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #090;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .help_text {
+            display: block;
+            padding: 5%;
+            margin: 1px;
+        }
+
+        td:hover {
+            text-shadow: 1px 2px black;
+            border-color: lightgreen;
+        }
