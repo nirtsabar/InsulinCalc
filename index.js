@@ -342,6 +342,8 @@ function updateNum_Slider() {
         for (let i = 0; i < iElements.length; i++) {
             iElements[i].value = iElements[i].value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
         }
+        document.getElementsByClassName('outItem').item(0).style
+           .boxShadow = 'initial';
     }
 }
 
@@ -469,7 +471,7 @@ function correctedInsulin(insulinDose) {
     }
 }
 
-function update(this_form) {
+function updateCalculator(this_form) {
     let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value);
     this_form.rInsulin0.value = correctedInsulin(ri0);
     this_form.rInsulin2.focus();// to ease watching if possible
@@ -478,6 +480,8 @@ function update(this_form) {
     this_form.rInsulin1.value = correctedInsulin(ri1);
     let ri2 = Number(this_form.insulinLong.value) + insulinDelta(this_form.glucose0.value);
     this_form.rInsulin2.value = correctedInsulin(ri2);
+    this_form.getElementsByClassName('outItem').item(0).style
+       .boxShadow = '3px 3px 3px lightgreen';
 }
 
 function clearForm(oForm) {
