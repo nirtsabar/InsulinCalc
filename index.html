@@ -36,82 +36,71 @@
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RG0">
-                        <label for="glucose0" class="input_txt" id="Glucose_measured_today_morning"></label>
+                        <!-- ^ 3 char id code: R/D/L/T/S for Row,Div,Label,Text,Slider;
+                               G/I for Glucose/Insulin; 0/1/2 for morning, noon, evening|long-acting -->
+                        <label for="TG0" class="input_txt" id="LG0"></label>
                         <!--suppress HtmlUnknownAttribute -->
-                        <input class="inGlu" name="glucose0" id="glucose0" mirr="SG0" tabindex="1">
+                        <input class="inGlu" name="glucose0" id="TG0" mirr="SG0" tabindex="1">
                     </div>
                     <div class="tRow" id="DG0">
                         <!--suppress HtmlFormInputWithoutLabel -->
-                        <input name="SG0" id="SG0" type="range" class=slider mirr="glucose0" list="tick_marks">
-                        <datalist id="tick_marks">
-                            <!--                <option value="0"></option>-->
-                            <!--                <option value="10"></option>-->
-                            <option value="20"></option>
-                            <option value="30"></option>
-                            <option value="40"></option>
-                            <option value="50"></option>
-                            <option value="60"></option>
-                            <option value="70"></option>
-                            <option value="80"></option>
-                            <option value="90"></option>
-                            <option value="100"></option>
-                        </datalist>
+                        <input name="SG0" id="SG0" type="range" class=slider mirr="TG0">
                     </div>
                 </div>
 
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RI0">
-                        <label for="insulin0" class="input_txt" id="Insulin_given_yesterday_morning"></label>
-                        <input class="inIns" name="insulin0" id="insulin0" mirr="SI0" tabindex="2">
+                        <label for="TI0" class="input_txt" id="LI0"></label>
+                        <input class="inIns" name="insulin0" id="TI0" mirr="SI0" tabindex="2">
                     </div>
                     <div class="tRow">
                         <!--suppress HtmlFormInputWithoutLabel -->
-                        <input id="SI0" type="range" mirr="insulin0" class=slider>
+                        <input id="SI0" type="range" mirr="TI0" class=slider>
                     </div>
                 </div>
 
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RG1">
-                        <label for="glucose1" class="input_txt" id="Glucose_measured_yesterday_noon"></label>
-                        <input class="inGlu" name="glucose1" id="glucose1" mirr="SG1" tabindex="3">
+                        <label for="TG1" class="input_txt" id="LG1"></label>
+                        <input class="inGlu" name="glucose1" id="TG1" mirr="SG1" tabindex="3">
                     </div>
                     <div class="tRow">
-                        <input name="SG1" id="SG1" type="range" mirr="glucose1">
+                        <input name="SG1" id="SG1" type="range" mirr="TG1">
                     </div>
                 </div>
 
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RI1">
-                        <label for="insulin1" class="input_txt" id="Insulin_given_yesterday_noon"></label>
-                        <input class="inIns" name="insulin1" id="insulin1" mirr="SI1" tabindex="4">
+                        <label for="TI1" class="input_txt" id="LI1"></label>
+                        <input class="inIns" name="insulin1" id="TI1" mirr="SI1" tabindex="4">
                     </div>
                     <div class="tRow">
-                        <input name="SI1" id="SI1" type="range" mirr="insulin1">
+                        <input name="SI1" id="SI1" type="range" mirr="TI1">
                     </div>
                 </div>
 
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RG2">
-                        <label for="glucose2" class="input_txt" id="Glucose_measured_yesterday_evening"></label>
-                        <input class="inGlu" name="glucose2" id="glucose2" mirr="SG2" tabindex="5">
+                        <label for="TG2" class="input_txt" id="LG2"></label>
+                        <input class="inGlu" name="glucose2" id="TG2" mirr="SG2" tabindex="5">
                     </div>
                     <div class="tRow">
-                        <input name="SG2" id="SG2" type="range" mirr="glucose2">
+                        <input name="SG2" id="SG2" type="range" mirr="TG2">
                     </div>
                 </div>
 
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RI2">
-                        <label for="insulinLong" class="input_txt" id="Long_Acting_Insulin"></label>
-                        <input class="inIns" name="insulinLong" id="insulinLong" mirr="SI2" tabindex="6">
+                        <label for="TI2" class="input_txt" id="LI2"></label>
+                        <input class="inIns" name="insulinLong" id="TI2" mirr="SI2" tabindex="6">
                     </div>
                     <div class="tRow">
-                        <input name="SI2" id="SI2" type="range" mirr="insulinLong">
+                        <input name="SI2" id="SI2" type="range" mirr="TI2">
                     </div>
                 </div>
 
@@ -136,19 +125,19 @@
 
                 <div class="cItem outItem">
                     <span> </span>
-                    <div class="tRow" id="RrI0">
-                        <label for="rInsulin0" class="input_txt" id="rI0t"></label>
-                        <input readonly name="rInsulin0" id="rInsulin0">
+                    <div class="tRow">
+                        <label for="OI0" class="input_txt"></label>
+                        <input readonly name="rInsulin0" id="OI0">
                     </div>
                     <span> </span>
                     <div class="tRow" id="RrI1">
-                        <label for="rInsulin1" class="input_txt" id="rI1t"></label>
-                        <input readonly name="rInsulin1" id="rInsulin1">
+                        <label for="OI1" class="input_txt"></label>
+                        <input readonly name="rInsulin1" id="OI1">
                     </div>
                     <span> </span>
                     <div class="tRow" id="RrI2">
-                        <label for="rInsulin2" class="input_txt" id="rI2t"></label>
-                        <input readonly name="rInsulin2" id="rInsulin2">
+                        <label for="OI2" class="input_txt"></label>
+                        <input readonly name="rInsulin2" id="OI2">
                     </div>
                 </div>
 

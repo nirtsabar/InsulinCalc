@@ -15,7 +15,7 @@
             background-color: green;
         }
 
-        td:hover {
+        .tRow:hover {
             text-shadow: 2px 2px 8px #FF0000;
         }
 
@@ -68,7 +68,7 @@
             border-width: 0.2em;
             border-radius: 1em;
             border-style: solid;
-            border-color: green; /*****/
+            border-color: green;
             width: 11vw;
         }
 
@@ -221,8 +221,7 @@
             text-shadow: 1px 1px #0a0;
         }
 
-        .close:hover,
-        .close:focus {
+        .close:hover, .close:focus {
             color: #090;
             text-decoration: none;
             cursor: pointer;
@@ -234,7 +233,3 @@
             margin: 1px;
         }
 
-        td:hover {
-            text-shadow: 1px 2px black;
-            border-color: lightgreen;
-        }

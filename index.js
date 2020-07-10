@@ -2,7 +2,7 @@
 const InitOptimalGlu = 180;
 const InitInsGluFactor = 25;
 const initInsulin = 0;
-const minGlucose = 10;
+const minGlucose = 0;
 const maxGlucose = 500;
 const minInsulin = 0;
 const maxInsulin = 50;
@@ -12,6 +12,7 @@ let focusabl; //Array for all potential elements to include in "Enter" key toggl
 let lastIndex = -1; //global for last 'tab' / 'Enter' focus
 let visFocussable = [];
 let allElements = [];
+
 /* Dictionary - Trios of: "id", "hebrew text", "hebrew help",... */
 let Dict = [
     "Insulin_Glucose_Header", "אאינסולין היום לפי אתמול", "",
@@ -66,7 +67,6 @@ function formInit(iForm) {
     iForm.glucose_Insulin_Factor.value = InitInsGluFactor;
 
     /* Initialization of form texts*/
-
     let txtArray = document.getElementById("outer").querySelectorAll(".input_txt, .has_tip");
     for (let i = 0; i < txtArray.length; i++) {
         let tElem = txtArray[i];
@@ -75,6 +75,7 @@ function formInit(iForm) {
             tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
         }
     }
+    autoFocusedE.focus();
 
     {// Defining input elements filters
         let tElems = iForm.querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']");
@@ -101,10 +102,8 @@ function formInit(iForm) {
             tElem.focus();
             updateNum_Slider();
         }
-        autoFocusedE.focus();
 
-
-        // Restricts input for the given textbox to the given inputFilter function.
+        // Restrict input at the given textbox to the given inputFilter function.
         function setFilterInput(textbox, inputFilter) {
             let Events = ["change", "input", "keydown", "select", "contextmenu", "paste", "animationstart", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"];//"onmouseleave", "select", "contextmenu", "paste", "animationstart", "change", "onkeydown", "onkeyup", "mousedown", "mouseup", "drop", "touchstart", "drag"
             for (let i = 0; i < Events.length; i++) {
@@ -127,12 +126,13 @@ function formInit(iForm) {
                         this.value = this.min;
                     }
                     updateNum_Slider();
+                    outStyle(false);
                 }, {passive: false})
             }
         }
     }
     window.addEventListener("keydown", function (event) {
-        if (event.key === "Enter" && document.activeElement.type !=="button") {
+        if (event.key === "Enter" && document.activeElement.type !== "button") {
             event.preventDefault();
             updateNum_Slider();
             GoNext();
@@ -157,11 +157,11 @@ function formInit(iForm) {
         }
         const sBtnHtml = 'type="button"  style="background-color:darkgreen;width:2em;' +
             'border-color:darkgreen;box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;color:lightgreen;font-weight:bolder"' +
-            ' onClick="setS(this)" onmousedown="longTouch(this)" '+
-                         'ontouchstart="longTouch(this)" onmouseup="quitTouch()" ontouchend="quitTouch()">'
+            ' onClick="setS(this)" onmousedown="longTouch(this)" ' +
+            'ontouchstart="longTouch(this)" onmouseup="quitTouch()" ontouchend="quitTouch()">'
         slider.insertAdjacentHTML('beforebegin',
             '<input class="clrBtn" name="clrBtn" value="&times"' + sBtnHtml +
-             '<input class="lessBtn" name="lessBtn" value="-"'+ sBtnHtml);
+            '<input class="lessBtn" name="lessBtn" value="-"' + sBtnHtml);
         slider.insertAdjacentHTML('afterend',
             '<input class="moreBtn" name="moreBtn" value="+"' + sBtnHtml);
     }
@@ -286,36 +286,37 @@ function GoNext() {
 }
 
 let timeOut, interval;
+
 function longTouch(elem) {
-    console.log("longTouch elem="+elem);
-    timeOut = setTimeout(function() {
-          interval = setInterval(function() {
+    timeOut = setTimeout(function () {
+        interval = setInterval(function () {
             setS(elem);
-          }, 50);
+        }, 50);
     }, 500);
 }
+
 function quitTouch() {
-    console.log("quitTouch");
     if (timeOut) clearTimeout(timeOut);
     if (interval) clearInterval(interval);
 }
+
 function setS(elem) {
     let sliderE;
-    switch(elem.name) {
-          case "clrBtn":
+    switch (elem.name) {
+        case "clrBtn":
             sliderE = elem.nextElementSibling.nextElementSibling;
             sliderE.value = 0;
             break;
-          case "lessBtn":
+        case "lessBtn":
             sliderE = elem.nextElementSibling;
-            sliderE.value --;
+            sliderE.value--;
             break;
-          case "moreBtn":
+        case "moreBtn":
             sliderE = elem.previousElementSibling;
-            sliderE.value ++;
+            sliderE.value++;
             break;
-          default:
-            // code block
+        default:
+        // code block
     }
     sliderE.focus();
     updateNum_Slider();
@@ -323,54 +324,56 @@ function setS(elem) {
 
 // Set range value according to number, or vice versa; refreshes input elements
 function updateNum_Slider() {
-    let activeElem = document.activeElement;
-    if (activeElem.hasAttribute("mirr")) {
-        let activeMirrorE;
-        try {
-            activeMirrorE = document.getElementById(activeElem.getAttribute("mirr"));
-        } catch (e) {
-            console.log("#7 error=" + e + " Active Element=" + activeElem.id + " lastIndex=" + lastIndex);
-            activeMirrorE = visFocussable[Math.max(lastIndex, 0)];
-        }
-        if (activeElem.value) {
-            activeMirrorE.value = activeElem.value;
-        } else {
-            activeMirrorE.value = activeMirrorE.min;
-        }
-        let tColor = colorCode(activeElem);
+    let aE = document.activeElement;
+    if (aE.hasAttribute("mirr")) {
+        let aMirrorE = document.getElementById(aE.getAttribute("mirr"));
+        if (!aE.value) {aE.value = 0;}
+        aMirrorE.value = aE.value;
+        colorCode(aE);
         let iElements = document.getElementById("outer").querySelectorAll("input");
         for (let i = 0; i < iElements.length; i++) {
             iElements[i].value = iElements[i].value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
         }
-        document.getElementsByClassName('outItem').item(0).style
-           .boxShadow = 'initial';
     }
 }
 
 function colorCode(e) {
     let cC = "#00FF00";
     let ddHex = function (n) {  // returns a 2 digit hex representing relative range 0-1
-        return ("0"+(Math.round(255*n)).toString(16).toUpperCase()).substr(-2)
+        return ("0" + (Math.round(255 * n)).toString(16).toUpperCase()).substr(-2)
     }
-    switch(e.id.substr(0,2)) {  // checks id for clues:
-          case "SI":                        // if Insulin slider input
-                cC = ddHex(Number(e.value)/maxInsulin);
-                cC = "#"+cC+"FF00";            // color yellower for higher dose
-                break;
-          case "SG":                       // if Glucose slider input
-                let GluOffSet = Number(e.value)-InitOptimalGlu;
-                if (GluOffSet > 0) {
-                    GluOffSet = GluOffSet/(maxGlucose - InitOptimalGlu);
-                } else {
-                    GluOffSet = GluOffSet/(minGlucose-InitOptimalGlu);
-                }
-                cC = "#"+ddHex(GluOffSet)+ddHex(1-GluOffSet)+"00";
-                break;
-          default:
-            // code block
+    switch (e.id.substr(0, 2)) {  // checks id for clues:
+        case "SI":                        // if Insulin slider input
+            cC = ddHex(Number(e.value) / maxInsulin);
+            cC = "#" + cC + "FF00";            // color yellower for higher dose
+            break;
+        case "SG":                       // if Glucose slider input
+            let GluOffSet = Number(e.value) - InitOptimalGlu;
+            if (GluOffSet > 0) {
+                GluOffSet = GluOffSet / (maxGlucose - InitOptimalGlu);
+            } else {
+                GluOffSet = GluOffSet / (minGlucose - InitOptimalGlu);
+            }
+            cC = "#" + ddHex(GluOffSet) + ddHex(1 - GluOffSet) + "00";
+            break;
+        default:
+        // code block
     }
-    style.innerHTML = 'input[type="range"]#'+e.id+'::-webkit-slider-thumb { border-color:'+cC+'}';
-    console.log(cC);
+    style.innerHTML = 'input[type="range"]#' + e.id + '::-webkit-slider-thumb { border-color:' + cC + '}';
+}
+
+function outStyle (isFresh) {
+    let bShadowStyle='none';
+    let tShadowStyle='none';
+    if (isFresh) {
+        bShadowStyle='3px 3px 3px lightgreen';
+        tShadowStyle='2px 2px 2px black';
+    }
+    let outBoxes = Array.from(document.querySelectorAll(".outItem, .outItem input"));
+    for (let i = 0; i < outBoxes.length; i ++) {
+            outBoxes[i].style.boxShadow = bShadowStyle;
+            outBoxes[i].style.textShadow = tShadowStyle;
+        }
 }
 
 function show_tip(etip) { /*. Use an html.element parameter*/
@@ -449,7 +452,7 @@ function fadeOut(fElem, hID) {
 }
 
 function insulinDelta(glucose) {
-    let delta ="?";
+    let delta = "?";
     let giF = document.getElementById("glucose_Insulin_Factor").value;
     if (glucose !== "") {
         if (giF > 0) {
@@ -474,14 +477,13 @@ function correctedInsulin(insulinDose) {
 function updateCalculator(this_form) {
     let ri0 = Number(this_form.insulin0.value) + insulinDelta(this_form.glucose1.value);
     this_form.rInsulin0.value = correctedInsulin(ri0);
-    this_form.rInsulin2.focus();// to ease watching if possible
+    this_form.SubmitBtn.focus();
     this_form.rInsulin0.focus();// to ensure displaying
     let ri1 = Number(this_form.insulin1.value) + insulinDelta(this_form.glucose2.value);
     this_form.rInsulin1.value = correctedInsulin(ri1);
     let ri2 = Number(this_form.insulinLong.value) + insulinDelta(this_form.glucose0.value);
     this_form.rInsulin2.value = correctedInsulin(ri2);
-    this_form.getElementsByClassName('outItem').item(0).style
-       .boxShadow = '3px 3px 3px lightgreen';
+    outStyle(true) ;
 }
 
 function clearForm(oForm) {
