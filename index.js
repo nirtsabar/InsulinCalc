@@ -513,7 +513,7 @@ function updateCalculator(this_form) {
 
 function clearForm(oForm) {
     oForm.reset();
-    oForm.optimalGlucose = InitOptimalGlu;
-    oForm.glucose_Insulin_Factor = InitInsGluFactor;
+    oForm.optimalGlucose.value = InitOptimalGlu;
+    oForm.glucose_Insulin_Factor.value = InitInsGluFactor;
     autoFocusedE.focus();
 }
