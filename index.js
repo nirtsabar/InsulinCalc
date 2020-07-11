@@ -146,6 +146,7 @@ function formInit(iForm) {
         slider.max = mirrorText.max;
         slider.defaultValue = mirrorText.min;
         slider.value = mirrorText.value;
+        slider.force = 0.5;
         let sEvents = ["input"];// removed "touchstart","touchmove","change",
         for (let x = 0; x < sEvents.length; x++) {
             let event = sEvents[x];
@@ -512,5 +513,7 @@ function updateCalculator(this_form) {
 
 function clearForm(oForm) {
     oForm.reset();
+    oForm.optimalGlucose = InitOptimalGlu;
+    oForm.glucose_Insulin_Factor = InitInsGluFactor;
     autoFocusedE.focus();
 }
