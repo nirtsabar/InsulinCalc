@@ -357,8 +357,12 @@ function colorCode(e) {
     if (e.value === "0") {
         cC = 'grey';
     } else {
+        let augment = function (n) { // returns a hyperbole
+            return (2*n-n*n);
+        }
         let ddHex = function (n) {  // returns a 2 digit hex representing relative range 0-1
-            return ("0" + (Math.round(255 * Math.pow(n, 10))).toString(16).toUpperCase()).substr(-2)
+            return ("0" + (Math.round(255 * n).toString(16).
+                    toUpperCase())).substr(-2);
         }
         switch (e.id.substr(0, 2)) {  // checks id for clues:
             case "SI":                        // if Insulin slider input
@@ -372,6 +376,7 @@ function colorCode(e) {
                 } else {
                     GluOffSet = GluOffSet / (minGlucose - InitOptimalGlu);
                 }
+                GluOffSet = augment (GluOffSet);
                 cC = "#" + ddHex(GluOffSet) + ddHex(1 - GluOffSet) + "00";
                 break;
             default:
