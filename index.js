@@ -146,7 +146,7 @@ function formInit(iForm) {
         slider.max = mirrorText.max;
         slider.defaultValue = mirrorText.min;
         slider.value = mirrorText.value;
-        let sEvents = ["change", "touchstart", "touchmove", "input"];
+        let sEvents = ["change", "touchmove", "input"];//"touchstart",
         for (let x = 0; x < sEvents.length; x++) {
             let event = sEvents[x];
             slider.addEventListener(event, function () {
@@ -376,7 +376,7 @@ function colorCode(e) {
                 } else {
                     GluOffSet = GluOffSet / (minGlucose - InitOptimalGlu);
                 }
-                GluOffSet = augment (GluOffSet);
+                GluOffSet = augment (GluOffSet); // v color redder for higher dose
                 cC = "#" + ddHex(GluOffSet) + ddHex(1 - GluOffSet) + "00";
                 break;
             default:
