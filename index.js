@@ -17,18 +17,18 @@ let allElements = [];
 let Dict = [
     "Insulin_Glucose_Header", "אאינסולין היום לפי אתמול", "",
     "disclaimer", "מחשבון - לא תחליף ליעוץ רפואי", "לפרטים: דר ניר צבר TSABAR.NIR@GMAIL.COM",
-    "Glucose_measured_today_morning", "סוכר שנמדד <i><b>היום</b></i> בבוקר", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) <i><b>היום</b></i> הבוקר בצום",
-    "Insulin_given_yesterday_morning", "אינסולין שניתן <i><b>אתמול</b></i> בבוקר", "כמה יחידות אינסולין קצר-טווח הוזרקו אתמול בבוקר?",
-    "Glucose_measured_yesterday_noon", "סוכר שנמדד <i><b>אתמול</b></i> בצהרים", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) בצהרים אתמול",
-    "Insulin_given_yesterday_noon", "אינסולין שניתן <i><b>אתמול</b></i> בצהרים", "אינסולין קצר טווח שניתן בצהרים אתמול",
-    "Glucose_measured_yesterday_evening", "סוכר שנמדד <i><b>אתמול</b></i> בערב", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) בערב אתמול",
-    "Long_Acting_Insulin", "אינסולין <i><b>ארוך-טווח</b></i>", "כמה אינסולין ארוך-טווח הוזרק אתמול ?",
+    "LG0", "סוכר שנמדד <i><b>היום</b></i> בבוקר", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) <i><b>היום</b></i> הבוקר בצום",
+    "LI0", "אינסולין שניתן <i><b>אתמול</b></i> בבוקר", "כמה יחידות אינסולין קצר-טווח הוזרקו אתמול בבוקר?",
+    "LG1", "סוכר שנמדד <i><b>אתמול</b></i> בצהרים", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) בצהרים אתמול",
+    "LI1", "אינסולין שניתן <i><b>אתמול</b></i> בצהרים", "אינסולין קצר טווח שניתן בצהרים אתמול",
+    "LG2", "סוכר שנמדד <i><b>אתמול</b></i> בערב", "סוכר (גלוקוז) שנמדד במד-סוכר (גלוקומטר) בערב אתמול",
+    "LI2", "אינסולין <i><b>ארוך-טווח</b></i>", "כמה אינסולין ארוך-טווח הוזרק אתמול ?",
     "Optimal_glucose", "רמת סוכר אופטימלית", "את רמת הסוכר האופטימלית יש להתאים לרמת הסיכון לנפילות סוכר, לגיל ולמצב התפקודי",
     "GIR", "תיקון סוכר ליחידת אינסולין", "מספר גבוה כאן יביא לתיקון אינסולין מתון יותר",
     "gItiptxt", "את רמת הסוכר האופטימלית יש להתאים לגיל ומצב תפקודי", "רמת הסוכר האופטימלית בטיפול תרופתי גבוהה יותר ככל שהגיל עולה או המצב התפקודי יורד. בסוכרת מסוג 2 עדיף להפחית סוכר באמצעות תזונה נכונה מאשר באמצעות תרופות",
-    "rI0t", "אינסולין מחושב להבוקר", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
-    "rI1t", "אינסולין מחושב לצהרים", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
-    "rI2t", "אינסולין ארוך-טווח מחושב", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+    "LO0", "אינסולין מחושב להבוקר", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+    "LO1", "אינסולין מחושב לצהרים", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
+    "LO2", "אינסולין ארוך-טווח מחושב", "החישוב נותן הערכה בלבד ובהנחה שהתנאים לא השתנו מאתמול",
     "CalcBtn", "חשב", "סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
     "CalcBtnH", "?", "סימן '?' מופיע כאשר חסר נתון מתאים של סוכר",
     "ZeroBtn", "איפוס", "לחיצה לאיפוס מלא. לאתחול מחדש - ניתן לרענן את הדף",
@@ -75,9 +75,8 @@ function formInit(iForm) {
             tElem.setAttribute('ondblclick', 'helper(this)'); //Putting helper popups
         }
     }
-    autoFocusedE.focus();
 
-    {// Defining input elements filters
+    /* Defining input elements filters*/{
         let tElems = iForm.querySelectorAll(".inGlu, .inIns, [name='optimalGlucose'], [name='glucose_Insulin_Factor']");
         for (let i = 0; i < tElems.length; i++) {
             let tElem = tElems[i];
@@ -126,7 +125,6 @@ function formInit(iForm) {
                         this.value = this.min;
                     }
                     updateNum_Slider();
-                    outStyle(false);
                 }, {passive: false})
             }
         }
@@ -140,6 +138,7 @@ function formInit(iForm) {
     })
 
     let sliders = this.document.querySelectorAll("[type='range']");
+    // set sliders' attributes and events
     for (let i = 0; i < sliders.length; i++) {
         let slider = sliders[i];
         let mirrorText = document.getElementById(slider.getAttribute("mirr"));
@@ -166,15 +165,18 @@ function formInit(iForm) {
             '<input class="moreBtn" name="moreBtn" value="+"' + sBtnHtml);
     }
 
-    //all potential elements to include in "Enter" key toggling
-    focusabl = Array.from(
-        document.querySelectorAll(
-            'button:not([disabled]), ' +
-            'input[type=text]:not([disabled]), ' +
-            'input[tabindex]:not([disabled]):not([tabindex="-1"])'
-        )
-    );
+    /*all potential elements to include in "Enter" key toggling */
+    {
+        focusabl = Array.from(
+            document.querySelectorAll(
+                'button:not([disabled]), ' +
+                'input[type=text]:not([disabled]), ' +
+                'input[tabindex]:not([disabled]):not([tabindex="-1"])'
+            )
+        );
+    }
     allElements = Array.from(document.querySelectorAll("*"));
+    autoFocusedE.focus();
 } // end of formInit here //
 //----------------------//
 
@@ -324,12 +326,25 @@ function setS(elem) {
 
 // Set range value according to number, or vice versa; refreshes input elements
 function updateNum_Slider() {
+    outStyle(false);
     let aE = document.activeElement;
     if (aE.hasAttribute("mirr")) {
         let aMirrorE = document.getElementById(aE.getAttribute("mirr"));
-        if (!aE.value) {aE.value = 0;}
+        if (!aE.value) {
+            aE.value = 0;
+        }
         aMirrorE.value = aE.value;
+
+        if (aE.id.substr(0, 1) === "T") {
+            let switchE = aE;
+            aE = aMirrorE;
+            aMirrorE = switchE;
+        }
+        if (aE.value === "0") {
+            aMirrorE.value = ""
+        }
         colorCode(aE);
+
         let iElements = document.getElementById("outer").querySelectorAll("input");
         for (let i = 0; i < iElements.length; i++) {
             iElements[i].value = iElements[i].value;// Needed for refreshing style after undetected (webkit\autofill ?) changes
@@ -339,41 +354,45 @@ function updateNum_Slider() {
 
 function colorCode(e) {
     let cC = "#00FF00";
-    let ddHex = function (n) {  // returns a 2 digit hex representing relative range 0-1
-        return ("0" + (Math.round(255 * n)).toString(16).toUpperCase()).substr(-2)
-    }
-    switch (e.id.substr(0, 2)) {  // checks id for clues:
-        case "SI":                        // if Insulin slider input
-            cC = ddHex(Number(e.value) / maxInsulin);
-            cC = "#" + cC + "FF00";            // color yellower for higher dose
-            break;
-        case "SG":                       // if Glucose slider input
-            let GluOffSet = Number(e.value) - InitOptimalGlu;
-            if (GluOffSet > 0) {
-                GluOffSet = GluOffSet / (maxGlucose - InitOptimalGlu);
-            } else {
-                GluOffSet = GluOffSet / (minGlucose - InitOptimalGlu);
-            }
-            cC = "#" + ddHex(GluOffSet) + ddHex(1 - GluOffSet) + "00";
-            break;
-        default:
-        // code block
+    if (e.value === "0") {
+        cC = 'grey';
+    } else {
+        let ddHex = function (n) {  // returns a 2 digit hex representing relative range 0-1
+            return ("0" + (Math.round(255 * n)).toString(16).toUpperCase()).substr(-2)
+        }
+        switch (e.id.substr(0, 2)) {  // checks id for clues:
+            case "SI":                        // if Insulin slider input
+                cC = ddHex(Number(e.value) / maxInsulin);
+                cC = "#" + cC + "FF00";            // color yellower for higher dose
+                break;
+            case "SG":                       // if Glucose slider input
+                let GluOffSet = Number(e.value) - InitOptimalGlu;
+                if (GluOffSet > 0) {
+                    GluOffSet = GluOffSet / (maxGlucose - InitOptimalGlu);
+                } else {
+                    GluOffSet = GluOffSet / (minGlucose - InitOptimalGlu);
+                }
+                cC = "#" + ddHex(GluOffSet) + ddHex(1 - GluOffSet) + "00";
+                break;
+            default:
+            // code block
+        }
     }
     style.innerHTML = 'input[type="range"]#' + e.id + '::-webkit-slider-thumb { border-color:' + cC + '}';
 }
 
-function outStyle (isFresh) {
-    let bShadowStyle='none';
-    let tShadowStyle='none';
+function outStyle(isFresh) {
+    let bShadowStyle = 'none';
+    let tShadowStyle = 'none';
     if (isFresh) {
-        bShadowStyle='3px 3px 3px lightgreen';
-        tShadowStyle='2px 2px 2px black';
+        bShadowStyle = '3px 3px 3px lightgreen';
+        tShadowStyle = '2px 2px 2px black';
     }
     let outBoxes = Array.from(document.querySelectorAll(".outItem, .outItem input"));
-    for (let i = 0; i < outBoxes.length; i ++) {
-            outBoxes[i].style.boxShadow = bShadowStyle;
-            outBoxes[i].style.textShadow = tShadowStyle;
-        }
+    for (let i = 0; i < outBoxes.length; i++) {
+        outBoxes[i].style.boxShadow = bShadowStyle;
+        outBoxes[i].style.textShadow = tShadowStyle;
+    }
 }
 
 function show_tip(etip) { /*. Use an html.element parameter*/
@@ -483,7 +502,7 @@ function updateCalculator(this_form) {
     this_form.rInsulin1.value = correctedInsulin(ri1);
     let ri2 = Number(this_form.insulinLong.value) + insulinDelta(this_form.glucose0.value);
     this_form.rInsulin2.value = correctedInsulin(ri2);
-    outStyle(true) ;
+    outStyle(true);
 }
 
 function clearForm(oForm) {

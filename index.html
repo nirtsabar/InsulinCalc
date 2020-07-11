@@ -14,8 +14,10 @@
 
 <body onload="formInit(igForm)">
 <!--[if IE]>
-<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
-    your browser</a> to improve your experience and security.</p>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please upgrade
+    your browser to improve your experience and security.</p>
+<p class="browserupgrade">זהו דפדפן <strong>שפג תוקפו</strong>. נא לשדרג את הדפדפן לצורך הפעלה מוצלחת ומועילה.</p>
+
 <![endif]-->
 
 <div id="outer">
@@ -23,7 +25,6 @@
     <div id="main_title">
         <h1>תכנית אינסולין להיום </h1>
     </div>
-
     <div id="ins_form">
         <div onmouseleave="hide_tip()">
             <p class="has_tip" id="disclaimer" onmouseover="show_tip(this)"></p>
@@ -36,8 +37,11 @@
                 <div class="cItem">
                     <span> </span>
                     <div class="tRow" id="RG0">
-                        <!-- ^ 3 char id code: R/D/L/T/S for Row,Div,Label,Text,Slider;
-                               G/I for Glucose/Insulin; 0/1/2 for morning, noon, evening|long-acting -->
+                        <!-- ^ 3 char id code:
+                           R/D/L/T/S for Row,Div,Label,Text,Slider;
+                           G/I/O for Glucose/Insulin/Output-insulin;
+                           0/1/2 for morning, noon, evening|long-acting
+                             e.g. TG2 for text-box of glucose at evening-->
                         <label for="TG0" class="input_txt" id="LG0"></label>
                         <!--suppress HtmlUnknownAttribute -->
                         <input class="inGlu" name="glucose0" id="TG0" mirr="SG0" tabindex="1">
@@ -126,17 +130,17 @@
                 <div class="cItem outItem">
                     <span> </span>
                     <div class="tRow">
-                        <label for="OI0" class="input_txt"></label>
+                        <label for="OI0" class="input_txt" id="LO0"></label>
                         <input readonly name="rInsulin0" id="OI0">
                     </div>
                     <span> </span>
                     <div class="tRow" id="RrI1">
-                        <label for="OI1" class="input_txt"></label>
+                        <label for="OI1" class="input_txt" id="LO1"></label>
                         <input readonly name="rInsulin1" id="OI1">
                     </div>
                     <span> </span>
                     <div class="tRow" id="RrI2">
-                        <label for="OI2" class="input_txt"></label>
+                        <label for="OI2" class="input_txt" id="LO2"></label>
                         <input readonly name="rInsulin2" id="OI2">
                     </div>
                 </div>
