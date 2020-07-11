@@ -146,7 +146,7 @@ function formInit(iForm) {
         slider.max = mirrorText.max;
         slider.defaultValue = mirrorText.min;
         slider.value = mirrorText.value;
-        let sEvents = ["change", "touchmove", "input"];//"touchstart",
+        let sEvents = ["change", "input"];//"touchstart","touchmove",
         for (let x = 0; x < sEvents.length; x++) {
             let event = sEvents[x];
             slider.addEventListener(event, function () {
