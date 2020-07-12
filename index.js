@@ -163,7 +163,10 @@ function formInit(iForm) {
             '<input class="clrBtn" name="clrBtn" value="&times"' + sBtnHtml +
             '<input class="lessBtn" name="lessBtn" value="-"' + sBtnHtml);
         slider.insertAdjacentHTML('afterend',
-            '<input class="moreBtn" name="moreBtn" value="+"' + sBtnHtml);
+            '<input class="moreBtn" name="moreBtn" value="+"' + sBtnHtml+
+            '\n<input class="noteBtn" name="noteBtn" value="?" '+ 'type="button"  style="background-color:darkgreen;width:4em;' +
+            'border-color:darkgreen;box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;color:lightgreen;font-weight:bolder"' +
+            ' ondblclick="helper(this)">');
     }
 
     /*all potential elements to include in "Enter" key toggling */
