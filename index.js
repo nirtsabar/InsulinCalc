@@ -155,18 +155,15 @@ function formInit(iForm) {
                 updateNum_Slider();
             }, {passive: false});
         }
-        const sBtnHtml = 'type="button"  style="background-color:darkgreen;width:2em;' +
-            'border-color:darkgreen;box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;color:lightgreen;font-weight:bolder"' +
-            ' onClick="setS(this)" onmousedown="longTouch(this)" ' +
-            'ontouchstart="longTouch(this)" onmouseup="quitTouch()" ontouchend="quitTouch()">'
+        const sBtnHtml = 'type="button" onClick="setS(this)" onmousedown="longTouch(this)" ' +
+            'ontouchstart="longTouch(this)" onmouseup="quitTouch()" ontouchend="quitTouch()"'
         slider.insertAdjacentHTML('beforebegin',
-            '<input class="clrBtn" name="clrBtn" value="&times"' + sBtnHtml +
-            '<input class="lessBtn" name="lessBtn" value="-"' + sBtnHtml);
+            '<input class="sBtn clrBtn" name="clrBtn" value="&times"' + sBtnHtml + ">"+
+            '\n<input class="sBtn lessBtn" name="lessBtn" value="-"' + sBtnHtml +">");
         slider.insertAdjacentHTML('afterend',
-            '<input class="moreBtn" name="moreBtn" value="+"' + sBtnHtml+
-            '\n<input class="noteBtn" name="noteBtn" value="?" '+ 'type="button"  style="background-color:darkgreen;width:4em;' +
-            'border-color:darkgreen;box-shadow: 1px 1px 1px lightgreen, 0 0 1px #0d0d0d;color:lightgreen;font-weight:bolder"' +
-            ' ondblclick="helper(this)">');
+            '<input class="sBtn moreBtn" name="moreBtn" value="+"' + sBtnHtml+ ">"+
+            '\n<input class="sBtn noteBtn" name="noteBtn" value="?" '+ sBtnHtml+ ' width=4em' +
+                     ' ondblclick="helper(this)">');
     }
 
     /*all potential elements to include in "Enter" key toggling */
@@ -394,7 +391,7 @@ function outStyle(isFresh) {
     let bShadowStyle = 'none';
     let tShadowStyle = 'none';
     if (isFresh) {
-        bShadowStyle = '3px 3px 3px lightgreen';
+        bShadowStyle = '0 0 3px 3px lime';
         tShadowStyle = '2px 2px 2px black';
     }
     let outBoxes = Array.from(document.querySelectorAll(".outItem, .outItem input"));
