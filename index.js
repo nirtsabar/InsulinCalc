@@ -194,7 +194,7 @@ function formInit(iForm) {
         slider.insertAdjacentHTML('afterend',
             '<input class="sBtn moreBtn" name="moreBtn" value="+"' + sBtnHtml + ">" +
             '\n<input class="sBtn noteBtn" name="noteBtn" value="?" ' + sBtnHtml + ' width="4em"' +
-            ' ondblclick="helper(this)">');
+            ' ondblclick="helper(this)" id=N'+slider.id.substr(1, 2)+'>');
     }
 
     /*all potential elements to include in "Enter" key toggling */
@@ -350,7 +350,7 @@ function setS(elem) {
             sliderE.value++;
             break;
         default:
-        // code block
+            return;
     }
     sliderE.focus();
     updateNum_Slider();
@@ -487,7 +487,7 @@ function helper(helpE) {
     };
     htimer = setTimeout(function () {
         fadeOut(modal, helpE);
-    }, 2000);
+    }, 30000);
 }
 
 function fadeOut(fElem, hID) {
