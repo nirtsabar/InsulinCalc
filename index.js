@@ -1,4 +1,30 @@
 /* Initial parameters */
+
+function browserCheck() {
+    let itIsIE;
+    try {itIsIE = !isIE && !!window.StyleMedia} catch {itIsIE = false}
+    switch (true) {
+        case (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0:
+            return "Opera 8.0+";
+        case typeof InstallTrigger !== 'undefined':
+            return "Firefox 1.0+";
+        case /constructor/i.test(window.HTMLElement) || (function (p) {
+                    return p.toString() === "[object SafariRemoteNotification]";
+                })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification)):
+            return "Safari 3.0+ [object HTMLElementConstructor]";
+        case /*@cc_on!@*/false || !!document.documentMode:
+            return "Internet Explorer 6-11";
+        case !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime):
+            return "Chrome 1 - 79";
+        case itIsIE:
+            return "Edge 20+";
+        case isChrome && (navigator.userAgent.indexOf("Edg") != -1):
+            return "Edge";
+        case (isChrome || isOpera) && !!window.CSS:
+            return "Blink engine";
+    }
+}
+
 const InitOptimalGlu = 180;
 const InitInsGluFactor = 25;
 const initInsulin = 0;
@@ -6,6 +32,7 @@ const minGlucose = 0;
 const maxGlucose = 500;
 const minInsulin = 0;
 const maxInsulin = 50;
+console.log("Browser detected as "+browserCheck());
 let style = document.querySelector('[data="dynamicCss"]');
 let autoFocusedE;
 let focusabl; //Array for all potential elements to include in "Enter" key toggling
@@ -209,7 +236,7 @@ function formInit(iForm) {
         slider.defaultValue = mirrorText.min;
         slider.value = mirrorText.value || 0;
         slider.force = 0.5;
-        let sEvents = ["input","change"];// removed "touchstart","touchmove","change",
+        let sEvents = ["input", "change"];// removed "touchstart","touchmove","change",
         for (let x = 0; x < sEvents.length; x++) {
             let event = sEvents[x];
             slider.addEventListener(event, function () {
