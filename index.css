@@ -144,8 +144,18 @@
 
         [type=range]::-ms-thumb {
             box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2), 0 0 4px rgba(13, 13, 13, 0.2);
-            background: darkgreen;
-            border: 0.1em solid green;
+            background: green;
+            border: 0.1em solid #00FF00;
+            border-radius: 0.9em;
+            height: 1.7em;
+            width: 1.7em;
+            margin: 0;
+
+        }
+        [type=range]::-moz-range-thumb {
+            box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2), 0 0 4px rgba(13, 13, 13, 0.2);
+            background: green;
+            border: 0.1em solid #00FF00;
             border-radius: 0.9em;
             height: 1.7em;
             width: 1.7em;
@@ -155,6 +165,10 @@
         input[type=range]::-ms-tooltip {
             display: none;
         }
+
+        /*input[type=range]::-moz-range-thumb {*/
+        /*    */
+        /*}*/
 
         [type="button"], [type="submit"] {
             width: 17vw;
