@@ -1,6 +1,6 @@
 /* Initial parameters */
 const InitOptimalGlu = 180;
-const InitInsGluFactor = 25;
+const InitInsGluFactor = 20;
 const initInsulin = 0;
 const minGlucose = 0;
 const maxGlucose = 500;
